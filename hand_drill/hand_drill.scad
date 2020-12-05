@@ -2,8 +2,8 @@ use <../MCAD/involute_gears.scad>
 
 module gears_print(print_gear1, print_gear2) {
         $fn = 20;
-        gear1_teeth = 41;
-        gear2_teeth = 7;
+        gear1_teeth = 56;
+        gear2_teeth = 12;
         axis_angle = 90;
         outside_circular_pitch=300;
     
@@ -55,8 +55,8 @@ module gears_print(print_gear1, print_gear2) {
 }
 
 module frame() {
-    external_gear_dia = 70;
-    external_gear_height = 18;
+    external_gear_dia = 96;
+    external_gear_height = 22;
     frame_w = 20;
     frame_h = 10;
    
@@ -69,47 +69,63 @@ module frame() {
                 frame_h]);
         translate([ -frame_w/2,
                 (external_gear_dia)/2,
-                0])
+                -0.1])
             cube([frame_w, 
                 frame_h,
                 external_gear_height*2]);
         translate([ -frame_w/2,
                 -(external_gear_dia)/2 - frame_h,
-                0])
+                -0.1])
             cube([frame_w, 
                 frame_h,
                 external_gear_height*2]);
         translate([ -frame_w/2,
                 -(external_gear_dia + frame_h*2) /2,
-                frame_h+external_gear_height])
+                frame_h*2+external_gear_height])
             cube([frame_w, 
                 external_gear_dia+frame_h*2,
                 frame_h]);
     }
 }
 
-module pin_big() {
+module pin_big(pin_d) {
     pin_d = 5;
     $fn = 20;
-    #union() {
+    union() {
         translate([0,0,15/2])
             cube([pin_d, pin_d, 15], center=true);
-        translate([0,0,-25/2])
-            cylinder(d=pin_d, h=25);
+        translate([0,0,-20])
+            cylinder(d=pin_d, h=20);
     }
 }
 
-module pin_small() {
-    external_gear_dia = 70;
-    external_gear_height = 18;
+module pin_small(pin_d) {
+    external_gear_dia = 96;
+    external_gear_height = 22;
     $fn = 20;
-    pin_d = 3;
-    #union() {
-        translate([0, external_gear_dia/2 - 20/2, external_gear_height])
-            cube([pin_d, 20, pin_d], center=true);
-        translate([0, external_gear_dia/2 + 20/2, external_gear_height])
+    //pin_d = 5;
+    union() {
+        translate([0, external_gear_dia/2 - 15/2, external_gear_height])
+            cube([pin_d, 15, pin_d], center=true);
+        translate([0, external_gear_dia/2 + 30,               external_gear_height])
             rotate([90,0,0])
                 cylinder(d=pin_d, h=30);
+    }
+}
+
+module handle() {
+    external_gear_dia = 96;
+    external_gear_height = 22;
+
+    translate([0, -external_gear_dia/2-15, external_gear_height])
+    union() {
+        hull() {
+            translate([0, -40, 0])
+                sphere(r=20);
+            sphere(r=10);
+        }
+        translate([0,10,0])
+            cube([10,10,10], center=true);
     }
 }
 
@@ -119,12 +135,14 @@ module main_part() {
             gears_print(0, 0);
             frame();
         }
-        pin_big();
-        pin_small();
+        pin_big(5.5);
+        pin_small(5.5);
+        handle();
     }
 }
-
-main_part();
-//pin_big();
-//pin_small();
-            
+union() {
+    //main_part();
+    //pin_big(5);
+    //pin_small(5);
+    handle();
+}
