@@ -1,22 +1,24 @@
 
-D_ext = 100;
-D_int = 35;
-H_ext = 3;
-H_int = 15;
+D_ext = 84;
+//D_int = 42;
+D_int = 38;
+H_ext = 1.5;
+H_int = 6;
+Wall_int = 1.5;
 
 module profile() {
     r = H_ext*2;
-    delta = 0.7;
+    delta = 0.4;
     union() {
-        square([(D_ext-D_int)/2, H_ext]);
+        translate([delta, 0]) square([(D_ext-D_int)/2-delta, H_ext]);
         //square([H_ext, H_int]);
         polygon(points = [
-            [-delta/2,0],
-            [delta/2, H_int],
-            [H_ext, H_int],
-            [H_ext, 0]]);
+            [0,0],
+            [delta, H_int],
+            [Wall_int, H_int],
+            [Wall_int, 0]]);
         difference() {
-            translate([0, 0]) square([r, r]);
+            translate([delta, 0]) square([r-delta, r]);
             translate([r, r]) circle(d=r);
         }
     }
