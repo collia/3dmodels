@@ -106,7 +106,7 @@ module pin_small(pin_d) {
     //pin_d = 5;
     union() {
         translate([0, external_gear_dia/2 - 15/2, external_gear_height])
-            cube([pin_d, 15, pin_d], center=true);
+            cube([pin_d, 20, pin_d], center=true);
         translate([0, external_gear_dia/2 + 30,               external_gear_height])
             rotate([90,0,0])
                 cylinder(d=pin_d, h=30);
@@ -132,8 +132,8 @@ module handle() {
 module main_part() {
     difference() {
         union() {
-            gears_print(0, 0);
-            frame();
+            gears_print(1, 0);
+            //frame();
         }
         pin_big(5.5);
         pin_small(5.5);
@@ -141,8 +141,8 @@ module main_part() {
     }
 }
 union() {
-    //main_part();
+    main_part();
     //pin_big(5);
     //pin_small(5);
-    handle();
+    //handle();
 }
