@@ -1,10 +1,11 @@
 D = 47.5;
 d = 36.5;
 W = 27.5;
+//W = 27;
 
 
 module apperture_2d_body() {
-    rnd = 2;
+    rnd = 3;
     minkowski() {
         union() {
             intersection() {
@@ -24,7 +25,7 @@ module apperture_2d_body() {
 
 module apperture_2d_with_handle(text) {
     handle_w = 10;
-    font_size = 4;
+    font_size = 3;
     rnd = 5;
     difference() {
         union() {
@@ -37,7 +38,7 @@ module apperture_2d_with_handle(text) {
         }
         translate([D/2+font_size/2, 3])
         rotate(-90)
-            text(text, size = font_size);
+            text(text, size = font_size, font="Monoid:style=Italic");
     }
 }
 
@@ -53,6 +54,28 @@ module test_print() {
         apperture_2d("16", 18.6);
 }
 
+module prepare_drawing() {
+    translate([0, -100])
+        apperture_2d("11", 26.24);
+    translate([0, -60])
+        apperture_2d("16", 18.6);
+    translate([0, -20])
+        apperture_2d("22", 13.1);
+    translate([0, 20])
+        apperture_2d("32", 9.2);
+    translate([0, 60])
+        apperture_2d("45", 6.54);
+    translate([0, 100])
+        apperture_2d("64", 4.6);
+
+}
+
 $fn = 50;
+//apperture_2d("11", 26.24);
 //apperture_2d("16", 18.6);
-test_print();
+//apperture_2d("22", 13.1);
+//apperture_2d("32", 9.2);
+//apperture_2d("45", 6.54);
+//apperture_2d("64", 4.6);
+//test_print();
+prepare_drawing();
