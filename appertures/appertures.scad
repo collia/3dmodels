@@ -1,6 +1,6 @@
-D = 47.5;
+D = 38.8;
 d = 36.5;
-W = 27.5;
+W = 33;
 //W = 27;
 
 
@@ -50,8 +50,20 @@ module apperture_2d(name, int_dia) {
 }
 
 module test_print() {
-    linear_extrude(height=0.7)
-        apperture_2d("16", 18.6);
+    linear_extrude(height=1) {
+        //translate([0, -100])
+        //    apperture_2d("11", 26.24);
+        //translate([0, -60])
+        //    apperture_2d("16", 18.6);
+        translate([0, -20])
+            apperture_2d("22", 13.1);
+        translate([0, 20])
+            apperture_2d("32", 9.2);
+        translate([0, 60])
+            apperture_2d("45", 6.54);
+        translate([0, 100])
+            apperture_2d("64", 4.6);
+    }
 }
 
 module prepare_drawing() {
@@ -67,7 +79,6 @@ module prepare_drawing() {
         apperture_2d("45", 6.54);
     translate([0, 100])
         apperture_2d("64", 4.6);
-
 }
 
 $fn = 50;
@@ -77,5 +88,5 @@ $fn = 50;
 //apperture_2d("32", 9.2);
 //apperture_2d("45", 6.54);
 //apperture_2d("64", 4.6);
-//test_print();
-prepare_drawing();
+test_print();
+//prepare_drawing();
