@@ -65,4 +65,12 @@ module frame_with_film_holder_container() {
     }
 }
 
-frame_with_film_holder_container();
+module test_print() {
+    intersection() {
+        cube([140, 190, 10], center=true);
+        frame_with_film_holder_container();
+    }
+}
+
+//frame_with_film_holder_container();
+test_print();
