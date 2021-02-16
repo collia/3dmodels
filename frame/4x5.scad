@@ -2,23 +2,24 @@
 module film_holder() {
     // standart film holder size
     // https://www.pinterest.co.uk/pin/392024342563219543/visual-search/?x=10&y=10&w=530&h=453&cropSource=6
-    x_1 = 120.5;
+    x_1 = 122;
     y_1 = 173.0;
     
     y_2 = 160;
-    z_1 = 14.5/2;
-    z_2 = 11.8/2;
+    z_1 = 14.5;
+    z_2 = 11.8;
     
-    y_3_w = 1.3;
-    y_3 = 141.3;
+    y_3_w = 2.5;
+    y_3 = 138.5;
     z_3 = 1.3+z_2;
-    
-    x_c_offs = 11.0;
-    y_c_offs = 15.8;
-    
-    x_c = 95.1;
-    y_c = 120.2;
+
+    x_c = 110;
+    y_c = 121.5;
     z_c = z_2 + 20;
+    
+    x_c_offs = (x_1 - x_c) / 2;
+    y_c_offs = 15.8;
+
     translate([x_1/2, -(y_c/2+y_c_offs), z_1])
     rotate([0,180,0])
     union() {
@@ -27,7 +28,7 @@ module film_holder() {
         cube([x_1, y_2, z_2]);
         translate([0, y_3, 0])
             cube([x_1, y_3_w, z_3]);
-        translate([x_c_offs, x_c_offs, 0])
+        translate([x_c_offs, y_c_offs, 0])
             cube([x_c, y_c, z_c]);
     }
 } 
@@ -35,13 +36,13 @@ module film_holder() {
 module frame() {
     side = 200;
     ext_side = 210;
-    int_size = 180;
+    int_size = 190;
     height_1 = 10;
-    height_2 = 6;
+    height_2 = 8;
     
-    film_h_x = 130;
+    film_h_x = 150;
     film_h_y = 180;
-    film_h_z = 5;
+    film_h_z = 12;
     
     translate([0,0, -height_2])
     union() {
@@ -67,10 +68,11 @@ module frame_with_film_holder_container() {
 
 module test_print() {
     intersection() {
-        cube([140, 190, 10], center=true);
+        cube([160, 190, 30], center=true);
         frame_with_film_holder_container();
     }
 }
 
+//film_holder();
 //frame_with_film_holder_container();
 test_print();
