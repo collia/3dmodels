@@ -2,7 +2,7 @@
 side = 200;
 ext_side = 210;
 int_size = 130;
-height_bottom = 10;
+height_bottom = 7;
 height_top = 6;
 
 
@@ -42,8 +42,8 @@ module film_holder() {
 
 
 module top_connector_hole() {
-    hole_dia = 1.5;
-    hole_h = 15;
+    hole_dia = 2;
+    hole_h = 12;
     hole_offset_w = 15;
     hole_offset_h = height_top/2;
 
@@ -80,8 +80,8 @@ module bottom_connector_holes() {
 }
 
 module screw() {
-    d = 3;
-    d_thread = 2.38;
+    d = 4;
+    d_thread = 3.38;
     translate([0, 0, -height_top])
         cylinder(d=d+0.5, h = height_top, $fn=30);
     translate([0, 0, -height_top-height_bottom])
@@ -138,8 +138,38 @@ module frame_with_film_holder_container() {
 }
 
 module print_part_1_mask() {
-    translate([0,0,10 - height_top])
-        cube([160, 180, 20], center=true);
+    //translate([0,0,10 - height_top])
+    //    cube([160, 180, 20], center=true);
+    x = 160;
+    y = 180;
+    z = 20;
+    delta = 3;
+    points = [
+        [ (x/2 + delta), (y/2-delta), -height_top],  // 0
+        [-(x/2 + delta), (y/2-delta), -height_top],  // 1
+        [-(x/2 + delta),-(y/2-delta), -height_top],  // 2
+        [ (x/2 + delta),-(y/2-delta), -height_top],  // 3
+        [ (x/2 - delta), (y/2+delta), 0],            // 4
+        [-(x/2 - delta), (y/2+delta), 0],            // 5
+        [-(x/2 - delta),-(y/2+delta), 0],            // 6
+        [ (x/2 - delta),-(y/2+delta), 0],            // 7
+        [ (x/2 - delta), (y/2+delta), z],            // 8
+        [-(x/2 - delta), (y/2+delta), z],            // 9
+        [-(x/2 - delta),-(y/2+delta), z],            // 10
+        [ (x/2 - delta),-(y/2+delta), z]             // 11
+    ];
+    faces = [
+        [0,1,2,3],
+        [4,5,1,0],
+        [5,6,2,1],
+        [6,7,3,2],
+        [7,4,0,3],
+        [4,8,9,5],
+        [5,9,10,6],
+        [6,10,11,7],
+        [7,11,8,4],
+        [11,10,9,8]];
+    polyhedron(points, faces);
 }
 
 module print_part_2_mask(direction_y) {
@@ -147,14 +177,21 @@ module print_part_2_mask(direction_y) {
         cube([side, side/2, height_bottom+0.1], center=true);
 }
 
-module print_part_3_mask(direction_x, direction_y) {
+module print_part_3_corners_mask(direction_x, direction_y) {
     difference() {
-        translate([ext_side/4*direction_x, ext_side/4*direction_y, -height_top/2])
-            cube([ext_side/2, ext_side/2, height_top], center=true);
+        translate([ext_side/4*direction_x, ext_side/3*direction_y, -height_top/2])
+            cube([ext_side/2, ext_side/3, height_top], center=true);
         print_part_1_mask();
     }
 }
 
+module print_part_3_center_mask(direction_x) {
+    difference() {
+        translate([ext_side/4*direction_x, 0, -height_top/2])
+            cube([ext_side/2, ext_side/3, height_top], center=true);
+        print_part_1_mask();
+    }
+}
 
 
 module print_part_1() {
@@ -180,40 +217,56 @@ module print_part_2_2() {
 
 module print_part_3_1() {
     intersection() {
-        print_part_3_mask(1, 1);
+        print_part_3_corners_mask(1, 1);
         frame_with_film_holder_container();
     }
 }
 
 module print_part_3_2() {
     intersection() {
-        print_part_3_mask(1, -1);
+        print_part_3_corners_mask(1, -1);
         frame_with_film_holder_container();
     }
 }
 
 module print_part_3_3() {
     intersection() {
-        print_part_3_mask(-1, 1);
+        print_part_3_corners_mask(-1, 1);
         frame_with_film_holder_container();
     }
 }
 
 module print_part_3_4() {
     intersection() {
-        print_part_3_mask(-1, -1);
+        print_part_3_corners_mask(-1, -1);
+        frame_with_film_holder_container();
+    }
+}
+module print_part_3_5() {
+    intersection() {
+        print_part_3_center_mask(1);
+        frame_with_film_holder_container();
+    }
+}
+module print_part_3_6() {
+    intersection() {
+        print_part_3_center_mask(-1);
         frame_with_film_holder_container();
     }
 }
 //film_holder();
 //frame_with_film_holder_container();
+//print_part_1_mask();
 print_part_1();
-//print_part_2_1();
+print_part_2_1();
 print_part_2_2();
-//print_part_3_1();
+print_part_3_1();
 print_part_3_2();
 print_part_3_3();
-//print_part_3_4();
+print_part_3_4();
+print_part_3_5();
+print_part_3_6();
 //print_part_1_mask();
 //print_part_2_mask(1);
-//print_part_3_mask(1,-1);
+//print_part_3_corners_mask(1,-1);
+//print_part_3_center_mask(1);
