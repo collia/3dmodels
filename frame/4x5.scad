@@ -173,22 +173,36 @@ module print_part_1_mask() {
 }
 
 module print_part_2_mask(direction_y) {
-    translate([0,side/4*direction_y, -height_top - height_bottom/2-0.1])
-        cube([side, side/2, height_bottom+0.1], center=true);
+    difference() {
+        translate([0,side/4*direction_y, -height_top - height_bottom/2-0.1])
+            cube([side, side/2, height_bottom-0.1], center=true);
+        print_part_3_corners_mask(1, direction_y);
+        print_part_3_corners_mask(-1, direction_y);
+        print_part_3_center_mask(1);
+        print_part_3_center_mask(-1);
+    }
 }
 
 module print_part_3_corners_mask(direction_x, direction_y) {
     difference() {
-        translate([ext_side/4*direction_x, ext_side/3*direction_y, -height_top/2])
-            cube([ext_side/2, ext_side/3, height_top], center=true);
+        union() {
+            translate([ext_side/4*direction_x, ext_side/3*direction_y, -height_top/2])
+                cube([ext_side/2, ext_side/3, height_top], center=true);
+            translate([(ext_side/2-8)*direction_x, ext_side/3*direction_y, -height_top-height_bottom/2])
+                cube([16, ext_side/3, height_bottom], center=true);
+        }
         print_part_1_mask();
     }
 }
 
 module print_part_3_center_mask(direction_x) {
     difference() {
-        translate([ext_side/4*direction_x, 0, -height_top/2])
-            cube([ext_side/2, ext_side/3, height_top], center=true);
+        union() {
+            translate([ext_side/4*direction_x, 0, -height_top/2])
+                cube([ext_side/2, ext_side/3, height_top], center=true);
+            translate([(ext_side/2-8)*direction_x, 0, -height_top-height_bottom/2])
+                cube([16, ext_side/3, height_bottom], center=true);
+        }
         print_part_1_mask();
     }
 }
@@ -256,7 +270,7 @@ module print_part_3_6() {
 }
 //film_holder();
 //frame_with_film_holder_container();
-//print_part_1_mask();
+
 print_part_1();
 print_part_2_1();
 print_part_2_2();
@@ -268,5 +282,8 @@ print_part_3_5();
 print_part_3_6();
 //print_part_1_mask();
 //print_part_2_mask(1);
-//print_part_3_corners_mask(1,-1);
+//print_part_3_corners_mask(1,1);
 //print_part_3_center_mask(1);
+
+//print_part_3_corners_mask(-1,1);
+//print_part_3_center_mask(-1);
