@@ -1,6 +1,8 @@
 
+include <../lib/threads.scad>
+
 side = 200;
-ext_side = 210;
+ext_side = 216;
 int_size = 130;
 height_bottom = 7;
 height_top = 6;
@@ -16,7 +18,7 @@ module film_holder() {
     z_1 = 14.5;
     z_2 = 11.8;
     
-    y_3_w = 2.5;
+    y_3_w = 2.8;
     y_3 = 138.5;
     z_3 = 1.3+z_2;
 
@@ -62,19 +64,19 @@ module top_connector_holes() {
         top_connector_hole();
 }
 module bottom_connector_holes() {
-    hole_w = 10;
-    hole_h = 3;
+    hole_w = 18;
+    hole_h = 3.5;
     hole_d = 10 + (ext_side-side)/2;
     hole_offset_w = 7;
 
-    translate([ext_side/2-hole_d/2, side/2 - hole_offset_w - hole_w/2, -height_top+hole_h/2])
+    translate([ext_side/2-hole_d/2, side/2 - hole_offset_w - hole_w/2, -height_top+hole_h/2-0.5])
         cube([hole_d, hole_w, hole_h], center = true);
-    translate([ext_side/2-hole_d/2, -side/2 + hole_offset_w + hole_w/2, -height_top+hole_h/2])
+    translate([ext_side/2-hole_d/2, -side/2 + hole_offset_w + hole_w/2, -height_top+hole_h/2-0.5])
         cube([hole_d, hole_w, hole_h], center = true);
     rotate([0,0,-90]) {
-        translate([ext_side/2-hole_d/2, side/2 - hole_offset_w - hole_w/2, -height_top+hole_h/2])
+        translate([ext_side/2-hole_d/2, side/2 - hole_offset_w - hole_w/2, -height_top+hole_h/2-0.5])
             cube([hole_d, hole_w, hole_h], center = true);
-        translate([ext_side/2-hole_d/2, -side/2 + hole_offset_w + hole_w/2, -height_top +hole_h/2])
+        translate([ext_side/2-hole_d/2, -side/2 + hole_offset_w + hole_w/2, -height_top +hole_h/2-0.5])
             cube([hole_d, hole_w, hole_h], center = true);
     }
 }
@@ -84,8 +86,10 @@ module screw() {
     d_thread = 3.38;
     translate([0, 0, -height_top])
         cylinder(d=d+0.5, h = height_top, $fn=30);
-    translate([0, 0, -height_top-height_bottom])
-        cylinder(d=d_thread, h = height_bottom, $fn=30);
+    translate([0, 0, -height_top-height_bottom]) {
+        //cylinder(d=d_thread, h = height_bottom, $fn=30);
+        metric_thread (diameter=d_thread, pitch=0.7, length=height_bottom, internal=true, n_starts=1);
+    }
 }
 
 module screws() {
@@ -273,13 +277,15 @@ module print_part_3_6() {
 
 print_part_1();
 print_part_2_1();
-print_part_2_2();
-print_part_3_1();
+//print_part_2_2();
+//print_part_3_1();
 print_part_3_2();
 print_part_3_3();
-print_part_3_4();
+//print_part_3_4();
 print_part_3_5();
-print_part_3_6();
+//print_part_3_6();
+
+
 //print_part_1_mask();
 //print_part_2_mask(1);
 //print_part_3_corners_mask(1,1);
