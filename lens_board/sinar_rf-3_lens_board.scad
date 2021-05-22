@@ -6,38 +6,41 @@ module lens_board() {
     width_2 = width_1 - 2*2;
     height_2 = 2;
     width_3 = width_2 - 2*4;
-    
-    central_d = 53;
+    dia_1 = 125;
+    central_d = 52;
     difference() {
-    union() {
-        difference() {
+        union() {
+            difference() {
+                translate([0,0, height_1/2])
+                    cube([width_1, width_1, height_1], center = true);
+                translate([0,0, height_1 - (height_1 - height_2)/2])
+                    cube([width_2, width_2, height_1 - height_2], center = true);
+            }
             translate([0,0, height_1/2])
-                cube([width_1, width_1, height_1], center = true);
-            translate([0,0, height_1 - (height_1 - height_2)/2])
-                cube([width_2, width_2, height_1 - height_2], center = true);
+                cube([width_3, width_3, height_1], center = true);
         }
-        translate([0,0, height_1/2])
-            cube([width_3, width_3, height_1], center = true);
-    }
-    cylinder(d=central_d, h=height_1);
+        cylinder(d=central_d, h=height_1);
+        translate([0,0, (height_1 - height_2)])
+            #cylinder(d=dia_1, h=height_1-height_2);
     }
 }
 
-module lens_connector() {
+module lens_nut() {
     central_d = 52;
     central_thread_step = 1;
     side_wall = 10;
-    h = 12+4;
+    h = 7;
     difference() {
-        hull() {
-            cylinder(d = central_d + 2*side_wall, h = h);
-            cylinder(d = 1.3*central_d + 4*side_wall, h = 4);
+        difference() {
+            cylinder(d = central_d + 2*side_wall, h = h, $fn=8);
+            metric_thread (diameter=central_d, pitch=central_thread_step, length=h, internal=true, n_starts=1);
         }
-        metric_thread (diameter=central_d, pitch=central_thread_step, length=h, internal=true, n_starts=1);
+        cylinder(d1 = central_d + 3, d2=0, h = h);
+        cylinder(d2 = central_d + 3, d1=0, h = h);
     }
 }
 
-union() {
-    lens_board();
-    lens_connector();
-}
+$fn= 100;
+//$fa = 100;
+lens_board();
+//lens_nut();
