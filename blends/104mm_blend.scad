@@ -19,8 +19,14 @@ module thread(d, wall) {
     }
 }
 
+angle_to_diameter = function(height, angle) height/cos(angle/2);
+
+
 $fn = 100;
+lens_angle = 72;
+height = 70;
+diameter = 103;
 union() {
-    blend(103-2, 160, 2, 70);
-    thread(103,2);
+    blend(diameter-2, diameter + angle_to_diameter(height, lens_angle), 2, 70);
+    thread(diameter,2);
 }
