@@ -6,8 +6,8 @@ module lens_board() {
     width_2 = width_1 - 2*2;
     height_2 = 2;
     width_3 = width_2 - 2*4;
-    dia_1 = 125;
-    central_d = 52;
+    dia_1 = 110;
+    central_d = 52.5;
     difference() {
         union() {
             difference() {
@@ -20,14 +20,13 @@ module lens_board() {
                 cube([width_3, width_3, height_1], center = true);
         }
         cylinder(d=central_d, h=height_1);
-        translate([0,0, (height_1 - height_2)])
-            #cylinder(d=dia_1, h=height_1-height_2);
+        
     }
 }
 
 module lens_nut() {
     central_d = 52;
-    central_thread_step = 1;
+    central_thread_step = 0.75;
     side_wall = 10;
     h = 7;
     difference() {
@@ -40,7 +39,8 @@ module lens_nut() {
     }
 }
 
-$fn= 100;
+$fn= 500;
 //$fa = 100;
 lens_board();
-//lens_nut();
+//scale([1.02, 1.02, 1.02]) //needed for PLA+
+//    lens_nut();

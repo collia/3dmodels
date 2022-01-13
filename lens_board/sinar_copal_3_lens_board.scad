@@ -23,7 +23,7 @@ module lens_board() {
 }
 
 
-$fn= 100;
+$fn= 200;
 //$fa = 100;
 lens_board();
 
