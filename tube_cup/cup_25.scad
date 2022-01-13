@@ -23,7 +23,7 @@ module cup(width, side, h1, h2, is_empty=true) {
 }
 
 module central_module_simple() {
-    w_full = 90;
+    w_full = 85;
     w_central = 65;
     w_cup = (w_full - w_central)/2;
     w_empty = 20;
@@ -38,11 +38,12 @@ module central_module_simple() {
 
 
 module central_module_complex() {
-    w_full = 90;
+    w_full = 85;
     w_central = 65;
     w_cup = (w_full - w_central)/2;
     w_empty = 20;
     d = 22;
+    $fn = 50;
 
     difference() {
         union() {
@@ -63,7 +64,7 @@ module central_module_2() {
     w_cup = (w_full - w_central)/2;
     w_empty = 40;
     d = 22;
-
+    
     difference() {
         union() {
             cup(25, 3, (w_central - w_empty)/2, w_cup, true);
@@ -103,15 +104,15 @@ module handle() {
     }
 }
 module cups() {
-rotate([0, 180, 0]) {
+    rotate([0, 180, 0]) {
     //cup(25, 2, 15, 2);
-    translate([70, 0, 0])
-        central_module_simple();
+    //translate([70, 0, 0])
+        //central_module_simple();
     central_module_complex();
     //central_module_2();
-}
+    }
 }
 
 
-//cups();
-handle();
+cups();
+//handle();
