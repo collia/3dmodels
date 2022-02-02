@@ -40,8 +40,8 @@ module packard_shuter_container() {
     w2  = 5;
     union() {
         cube([w, w, 8], center=true);
-        translate([w/2+w2/2, w/2-30, 0])
-            cube([w2, 30, 8], center=true);
+        translate([w/2+w2/2, 0, 0])
+            cube([w2, w-2*15, 8], center=true);
     }
 }
 
@@ -56,18 +56,39 @@ module lens_board_nut() {
 
 }
 
+module lens_bord_air_pump_hole() {
+    h = 20;
+    w = 113;
+    translate([-w/2-5/2-1, 0, -h/2+4]){
+        union() {
+            #cylinder(d=5, h=h, center=true);
+            translate([0, 0, -h/2])
+                #cylinder(d=8, h = 10);
+        }
+    }
+}
+
 module packard_shutter_pin() {
     d = 2;
-    translate([113/2 - 5, 113/2 - 25, -4]) 
-        #cylinder(h = 20 - 4, d = d, center = true);
+    h = 20;
+    translate([113/2 - 5, 113/2 - 25, -4]){
+        union() {
+            #cylinder(h = h, d = d, center = true);
+            translate([0, 0, -h/2])
+                #cylinder(d=13, h = 8);
+        }
+    }
 }
-//$fn= 200;
+
+$fn= 200;
 //$fa = 100;
+
 difference() {
     lens_board();
     packard_shuter_container();
     lens_board_nut();
     packard_shutter_pin();
+    lens_bord_air_pump_hole();
 }
 
 
