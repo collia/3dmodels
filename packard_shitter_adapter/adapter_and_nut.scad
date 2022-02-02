@@ -1,8 +1,15 @@
 include <../lib/threads.scad>
 
+// Main config
+external_board_w = 139;
+external_board_h = 3;
+shutter_w = 103;
+shutter_h = 9;
+main_h = 20;
+
 module lens_board_base() {
-    width_1 = 140;
-    height_1 = 4;
+    width_1 = external_board_w;
+    height_1 = external_board_h;
     width_2 = width_1 - 2*2;
     height_2 = 2;
     width_3 = width_2 - 2*4;
@@ -20,9 +27,9 @@ module lens_board_base() {
 }
 
 module lens_board() {
-    h_max = 20;
-    width = 140 - 5*2;
+    width = external_board_w - 5*2;
     r = width*1.7;
+    h_max = main_h;
     union() {
         intersection() {
             translate([0,0, -h_max/2 + 4])
@@ -36,46 +43,104 @@ module lens_board() {
 }
 
 module packard_shuter_container() {
-    w = 113;
+    w = shutter_w;
     w2  = 5;
     union() {
-        cube([w, w, 8], center=true);
+        cube([w, w, shutter_h], center=true);
         translate([w/2+w2/2, 0, 0])
-            cube([w2, w-2*15, 8], center=true);
+            cube([w2, w-2*15, shutter_h], center=true);
     }
 }
 
-module lens_board_nut() {
-    dia = 72;
-    h = 20 - 4;
+module lens_board_thread() {
+    dia = 85;
+    h = main_h - external_board_h;
     //difference() {
     //    cylinder(d = dia + 2*4, h = h, $fn=8);
-    translate([0,0, -h - 4])
+    translate([0,0, -h - external_board_h])
         metric_thread (diameter=dia, pitch=4, length=h, internal=true, n_starts=1, square=true);
     //}
+}
 
+module lens_nut_thread() {
+    dia = 85;
+    h = main_h - external_board_h;
+    metric_thread (diameter=dia, pitch=4, length=h, internal=false, n_starts=1, square=true);
 }
 
 module lens_bord_air_pump_hole() {
-    h = 20;
-    w = 113;
-    translate([-w/2-5/2-1, 0, -h/2+4]){
+    h = main_h;
+    w = shutter_w;
+    translate([-w/2-5/2-1, 0, -h/2+external_board_h]){
         union() {
-            #cylinder(d=5, h=h, center=true);
-            translate([0, 0, -h/2])
-                #cylinder(d=8, h = 10);
+            cylinder(d=5, h=h, center=true);
+            translate([0, 0, -h/2+5])
+                cylinder(d=8, h = 10, center=true);
+            translate([0, 0, h/2-1])
+                cube([7,7,4], center=true);
         }
     }
 }
 
 module packard_shutter_pin() {
-    d = 2;
-    h = 20;
-    translate([113/2 - 5, 113/2 - 25, -4]){
+    d = 3;
+    h = main_h;
+    translate([shutter_w/2 - 5, -(shutter_w/2 - 25), -h/2]){
         union() {
-            #cylinder(h = h, d = d, center = true);
+            cylinder(h = h, d = d, center = true);
             translate([0, 0, -h/2])
-                #cylinder(d=13, h = 8);
+                cylinder(d=14, h = 15);
+        }
+    }
+}
+
+module main_board() {
+    difference() {
+        lens_board();
+        packard_shuter_container();
+        lens_board_thread();
+        packard_shutter_pin();
+        lens_bord_air_pump_hole();
+    }
+}
+
+module lens_nut_52() {
+    central_d = 52;
+    central_thread_step = 0.75;
+    side_wall = 10;
+    h = 7;
+    big_thread_h = main_h - external_board_h;
+    union() {
+        difference() {
+            cylinder(d = central_d + 2*side_wall, h = h, $fn=8);
+            metric_thread (diameter=central_d, pitch=central_thread_step, length=h, internal=true, n_starts=1);
+        }
+        translate([0, 0, -big_thread_h]) {
+            difference() {
+                lens_nut_thread();
+                cylinder(h=big_thread_h, d2 = central_d + 5, d1 = central_d+10);
+            }
+        }
+    }
+}
+
+
+module lens_nut_72() {
+    central_d = 72;
+    central_thread_step = 0.75;
+    side_wall = 10;
+    h = 7;
+    big_thread_h = main_h - external_board_h;
+    union() {
+        difference() {
+            cylinder(d = central_d + 2*side_wall, h = h, $fn=8);
+            metric_thread (diameter=central_d, pitch=central_thread_step, length=h, internal=true, n_starts=1);
+        }
+        translate([0, 0, -big_thread_h]) {
+            difference() {
+                lens_nut_thread();
+                cylinder(h=big_thread_h, d2 = central_d + 5, d1 =central_d + 5);
+            }
         }
     }
 }
@@ -83,12 +148,6 @@ module packard_shutter_pin() {
 $fn= 200;
 //$fa = 100;
 
-difference() {
-    lens_board();
-    packard_shuter_container();
-    lens_board_nut();
-    packard_shutter_pin();
-    lens_bord_air_pump_hole();
-}
-
-
+//main_board();
+//lens_nut_52();
+lens_nut_72();
