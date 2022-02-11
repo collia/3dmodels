@@ -2,8 +2,8 @@ include <../lib/threads.scad>
 
 // Main config
 external_board_w = 139;
-external_board_h = 3;
-shutter_w = 103;
+external_board_h = 3.5;
+shutter_w = 104;
 shutter_h = 9;
 main_h = 20;
 
@@ -53,31 +53,41 @@ module packard_shuter_container() {
 }
 
 module lens_board_thread() {
-    dia = 85;
+    dia = 75;
     h = main_h - external_board_h;
-    //difference() {
-    //    cylinder(d = dia + 2*4, h = h, $fn=8);
-    translate([0,0, -h - external_board_h])
-        metric_thread (diameter=dia, pitch=4, length=h, internal=true, n_starts=1, square=true);
-    //}
+    difference() {
+        translate([0,0, -h - external_board_h]) {
+            metric_thread (diameter=dia, pitch=3, length=h, internal=true, n_starts=1, square=true);
+            translate([0,0, 5])
+                cylinder(d1 = dia + 5, d2 = dia -5, h = 5, center=true);
+        }
+    }
 }
 
 module lens_nut_thread() {
-    dia = 85;
+    dia = 75;
     h = main_h - external_board_h;
-    metric_thread (diameter=dia, pitch=4, length=h, internal=false, n_starts=1, square=true);
+    difference() {
+        metric_thread (diameter=dia, pitch=3, length=h, internal=false, n_starts=1, square=true);
+        translate([0, 0, 0])
+            difference() {
+                cylinder(d=dia+5, h=5);
+                cylinder(d1=dia-5, d2 = dia + 5, h=5);
+            }
+    }
 }
 
 module lens_bord_air_pump_hole() {
     h = main_h;
     w = shutter_w;
-    translate([-w/2-5/2-1, 0, -h/2+external_board_h]){
+    d = 6;
+    translate([-w/2-d/2-1, 0, -h/2+external_board_h]){
         union() {
-            cylinder(d=5, h=h, center=true);
+            cylinder(d=d, h=h, center=true);
             translate([0, 0, -h/2+5])
                 cylinder(d=8, h = 10, center=true);
             translate([0, 0, h/2-1])
-                cube([7,7,4], center=true);
+                cube([9,9,5], center=true);
         }
     }
 }
@@ -85,11 +95,11 @@ module lens_bord_air_pump_hole() {
 module packard_shutter_pin() {
     d = 3;
     h = main_h;
-    translate([shutter_w/2 - 5, -(shutter_w/2 - 25), -h/2]){
+    translate([shutter_w/2 - 15, -(shutter_w/2 - 26), -h/2]){
         union() {
             cylinder(h = h, d = d, center = true);
             translate([0, 0, -h/2])
-                cylinder(d=14, h = 15);
+                cylinder(d=14, h = 9);
         }
     }
 }
@@ -127,7 +137,7 @@ module lens_nut_52() {
 
 module lens_nut_72() {
     central_d = 72;
-    central_thread_step = 0.75;
+    central_thread_step = 1;
     side_wall = 10;
     h = 7;
     big_thread_h = main_h - external_board_h;
@@ -135,11 +145,14 @@ module lens_nut_72() {
         difference() {
             cylinder(d = central_d + 2*side_wall, h = h, $fn=8);
             metric_thread (diameter=central_d, pitch=central_thread_step, length=h, internal=true, n_starts=1);
+            translate([0,0,h-3]) {
+                cylinder(d1 = central_d - 3, d2 = central_d + 3, h = 3);
+            }
         }
         translate([0, 0, -big_thread_h]) {
             difference() {
                 lens_nut_thread();
-                cylinder(h=big_thread_h, d2 = central_d + 5, d1 =central_d + 5);
+                cylinder(h=big_thread_h, d2 = central_d-2.5, d1 =central_d - 2.5);
             }
         }
     }
