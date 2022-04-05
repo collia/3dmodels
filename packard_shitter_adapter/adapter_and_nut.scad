@@ -45,27 +45,38 @@ module lens_board() {
 module packard_shuter_container() {
     w = shutter_w;
     w2  = 5;
+    thread_hole_h = 10;
     union() {
         cube([w, w, shutter_h], center=true);
         translate([w/2+w2/2, 0, 0])
             cube([w2, w-2*15, shutter_h], center=true);
+        translate([w/2 - 6, w/2 - 5.5, -shutter_h/2])
+            cylinder(d=2, h = thread_hole_h, center=true);
+        translate([-(w/2 - 6), (w/2 - 5.5), -shutter_h/2])
+            cylinder(d=2, h = thread_hole_h, center=true);
+        translate([(w/2 - 6), -(w/2 - 5.5), -shutter_h/2])
+            cylinder(d=2, h = thread_hole_h,center=true);
+        translate([-(w/2 - 6), -(w/2 - 5.5), -shutter_h/2])
+            #cylinder(d=2, h = thread_hole_h, center=true);
     }
 }
 
 module lens_board_thread() {
-    dia = 75;
+    dia = 80;
     h = main_h - external_board_h;
     difference() {
         translate([0,0, -h - external_board_h]) {
             metric_thread (diameter=dia, pitch=3, length=h, internal=true, n_starts=1, square=true);
             translate([0,0, 5])
-                cylinder(d1 = dia + 5, d2 = dia -5, h = 5, center=true);
+                cylinder(d1 = dia + 5, d2 = dia - 5, h = 5, center=true);
+            translate([0,0, h-2])
+                cylinder(d1 = dia - 5, d2 = dia + 5, h = 5, center=true);
         }
     }
 }
 
 module lens_nut_thread() {
-    dia = 75;
+    dia = 80;
     h = main_h - external_board_h;
     difference() {
         metric_thread (diameter=dia, pitch=3, length=h, internal=false, n_starts=1, square=true);
@@ -95,11 +106,15 @@ module lens_bord_air_pump_hole() {
 module packard_shutter_pin() {
     d = 3;
     h = main_h;
-    translate([shutter_w/2 - 15, -(shutter_w/2 - 26), -h/2]){
+    translate([shutter_w/2 - 12, -(shutter_w/2 - 25), -h/2]){
         union() {
             cylinder(h = h, d = d, center = true);
             translate([0, 0, -h/2])
                 cylinder(d=14, h = 9);
+            translate([0, 4.5, 0])
+                cylinder(h = h-4, d = 1.5, center = true);
+            translate([0, -4.5, 0])
+                cylinder(h = h-4, d = 1.5, center = true);
         }
     }
 }
@@ -122,8 +137,12 @@ module lens_nut_52() {
     big_thread_h = main_h - external_board_h;
     union() {
         difference() {
-            cylinder(d = central_d + 2*side_wall, h = h, $fn=8);
-            metric_thread (diameter=central_d, pitch=central_thread_step, length=h, internal=true, n_starts=1);
+            cylinder(d = central_d + 2*side_wall, h = h);
+            metric_thread (diameter=central_d, pitch=central_thread_step, length=h, internal=true, n_starts=1, test=true);
+            for (i=[0:64])
+                rotate([0, 0, i*(360/64)])
+                    translate([central_d,0,0])
+                        cylinder(d = side_wall, h = h);
         }
         translate([0, 0, -big_thread_h]) {
             difference() {
@@ -138,16 +157,20 @@ module lens_nut_52() {
 module lens_nut_72() {
     central_d = 72;
     central_thread_step = 1;
-    side_wall = 10;
+    side_wall = 6;
     h = 7;
     big_thread_h = main_h - external_board_h;
     union() {
         difference() {
-            cylinder(d = central_d + 2*side_wall, h = h, $fn=8);
+            cylinder(d = central_d + 2*side_wall, h = h);
             metric_thread (diameter=central_d, pitch=central_thread_step, length=h, internal=true, n_starts=1);
             translate([0,0,h-3]) {
                 cylinder(d1 = central_d - 3, d2 = central_d + 3, h = 3);
             }
+            for (i=[0:64])
+                rotate([0, 0, i*(360/64)])
+                    translate([central_d/2 + side_wall,0,0])
+                        #cylinder(d = side_wall/2, h = h);
         }
         translate([0, 0, -big_thread_h]) {
             difference() {
@@ -161,6 +184,12 @@ module lens_nut_72() {
 $fn= 200;
 //$fa = 100;
 
+//intersection() {
+//    main_board();
+//    translate([0, 0, -4])
+//        cube([150, 150, 3], center=true);
+//}
 //main_board();
 //lens_nut_52();
 lens_nut_72();
+//packard_shuter_container();
