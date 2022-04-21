@@ -66,7 +66,8 @@ module lens_board_thread() {
     h = main_h - external_board_h;
     difference() {
         translate([0,0, -h - external_board_h]) {
-            metric_thread (diameter=dia, pitch=3, length=h, internal=true, n_starts=1, square=true);
+            scale([1.01, 1.01, 1])
+                metric_thread (diameter=dia, pitch=3, length=h, internal=true, n_starts=1, square=true);
             translate([0,0, 5])
                 cylinder(d1 = dia + 5, d2 = dia - 5, h = 5, center=true);
             translate([0,0, h-2])
@@ -77,13 +78,14 @@ module lens_board_thread() {
 
 module lens_nut_thread() {
     dia = 80;
-    h = main_h - external_board_h;
+    h = main_h - shutter_h;
     difference() {
-        metric_thread (diameter=dia, pitch=3, length=h, internal=false, n_starts=1, square=true);
-        translate([0, 0, 0])
+        scale([0.99, 0.99, 1])
+            metric_thread (diameter=dia, pitch=3, length=h, internal=false, n_starts=1, square=true);
+        translate([0, 0, h - 5])
             difference() {
-                cylinder(d=dia+5, h=5);
-                cylinder(d1=dia-5, d2 = dia + 5, h=5);
+                cylinder(d = dia+5, h=5);
+                cylinder(d2 = dia-5, d1 = dia + 5, h=5);
             }
     }
 }
@@ -129,6 +131,7 @@ module main_board() {
     }
 }
 
+
 module lens_nut_52() {
     central_d = 52;
     central_thread_step = 0.75;
@@ -151,45 +154,48 @@ module lens_nut_52() {
             }
         }
     }
+
 }
 
-
 module lens_nut_72() {
-    central_d = 72;
-    central_thread_step = 1;
+    lens_thread_d = 72;
+    lens_thread_h = 10;
+    lens_thread_step = 1;
+    lens_thread_offset = 15;
+    lens_barrel_d = 70;
     side_wall = 6;
-    h = 7;
-    big_thread_h = main_h - external_board_h;
+    extenal_d = 84;
+
+    big_thread_h = main_h - shutter_h;
+    total_h = lens_thread_offset + lens_thread_h;
+    handle_h = total_h - big_thread_h;
+    difference() {
     union() {
         difference() {
-            cylinder(d = central_d + 2*side_wall, h = h);
-            metric_thread (diameter=central_d, pitch=central_thread_step, length=h, internal=true, n_starts=1);
-            translate([0,0,h-3]) {
-                cylinder(d1 = central_d - 3, d2 = central_d + 3, h = 3);
+            cylinder(d = extenal_d, h = handle_h);
+            scale([1.01, 1.01, 1.0])
+                metric_thread (diameter=lens_thread_d,
+                               pitch=lens_thread_step,
+                               length=lens_thread_h,
+                               internal=true, n_starts=1);
+            translate([0,0,0]) {
+                cylinder(d1 = lens_thread_d + 2, d2 = lens_thread_d - 2, h = 2);
             }
             for (i=[0:64])
                 rotate([0, 0, i*(360/64)])
-                    translate([central_d/2 + side_wall,0,0])
-                        #cylinder(d = side_wall/2, h = h);
+                    translate([extenal_d/2,0,0])
+                        cylinder(d = side_wall/2, h = handle_h);
         }
-        translate([0, 0, -big_thread_h]) {
-            difference() {
-                lens_nut_thread();
-                cylinder(h=big_thread_h, d2 = central_d-2.5, d1 =central_d - 2.5);
-            }
-        }
+        translate([0, 0, handle_h-0.1])
+            lens_nut_thread();
+    }
+    cylinder(d = lens_barrel_d, h = total_h);
     }
 }
 
 $fn= 200;
-//$fa = 100;
 
-//intersection() {
-//    main_board();
-//    translate([0, 0, -4])
-//        cube([150, 150, 3], center=true);
-//}
 //main_board();
 //lens_nut_52();
 lens_nut_72();
-//packard_shuter_container();
+
