@@ -131,6 +131,42 @@ module main_board() {
     }
 }
 
+module lens_nut_42() {
+    lens_thread_d = 42.2; // 42.2 - 41.7
+    lens_thread_h = 8;
+    lens_thread_step = 2/3;//2mm/4 lines
+    lens_thread_offset = 8;
+    lens_barrel_d = 41;
+    side_wall = 6;
+    extenal_d = 84;
+
+    big_thread_h = main_h - shutter_h;
+    total_h = lens_thread_offset + lens_thread_h;
+    handle_h = total_h - big_thread_h;
+    difference() {
+    union() {
+        difference() {
+            cylinder(d = extenal_d, h = handle_h);
+            scale([1.01, 1.01, 1.0])
+                metric_thread (diameter=lens_thread_d,
+                               pitch=lens_thread_step,
+                               length=lens_thread_h,
+                               internal=true, n_starts=1);
+            translate([0,0,0]) {
+                cylinder(d1 = lens_thread_d + 2, d2 = lens_thread_d - 2, h = 2);
+            }
+            for (i=[0:64])
+                rotate([0, 0, i*(360/64)])
+                    translate([extenal_d/2,0,0])
+                        cylinder(d = side_wall/2, h = handle_h);
+        }
+        translate([0, 0, handle_h-0.1])
+            lens_nut_thread();
+    }
+    cylinder(d = lens_barrel_d, h = total_h);
+    }
+}
+
 
 module lens_nut_52() {
     lens_thread_d = 52;
