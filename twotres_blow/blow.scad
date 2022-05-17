@@ -45,19 +45,19 @@ module air_path_left() {
     window_h = 2;
     window_x = 18;
     internal_h = 5;
-    
+
     points = [ [5, 0, 0], //0
                [5+window_x, 0, 0], //1
                //[5+window_x, 0, window_h],
                //[5, 0, window_h],
-    
+
                [0, 7, internal_h],  //2
                [26, 7, internal_h], //3
-    
+
                [0, 0, internal_h],  //4
                [26, 0, internal_h]]; //5
     faces = [ [0, 1, 3, 2],
-              [0, 2, 4], 
+              [0, 2, 4],
               [2, 3, 5, 4],
               [3, 1, 5],
               [0, 4, 5, 1]];
@@ -68,6 +68,32 @@ module air_path_left() {
     }
     
 }
+module air_path_right() {
+    window_h = 2;
+    window_x = 18;
+    internal_h = 5;
+
+    points = [ [26 - window_x - 5, 0, 0], //0
+               [26 - 5, 0, 0], //1
+               //[5+window_x, 0, window_h],
+               //[5, 0, window_h],
+
+               [0, 7, internal_h],  //2
+               [26, 7, internal_h], //3
+
+               [0, 0, internal_h],  //4
+               [26, 0, internal_h]]; //5
+    faces = [ [0, 1, 3, 2],
+              [0, 2, 4],
+              [2, 3, 5, 4],
+              [3, 1, 5],
+              [0, 4, 5, 1]];
+    union() {
+        polyhedron(points, faces);
+        translate([26 - window_x - 5, -1, 0])
+            cube([window_x, 1, window_h]);
+    }
+}
 $fn = 50;
 
 difference() {
@@ -76,5 +102,6 @@ difference() {
         connectors();
     };
     translate([1, 0, -5])
-        air_path_left();
+        //air_path_left();
+        air_path_right();
 }
