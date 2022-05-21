@@ -2,10 +2,10 @@ include <../lib/threads.scad>
 
 // Main config
 external_board_w = 139;
-external_board_h = 3.5;
+external_board_h = 3.2;
 shutter_w = 104;
-shutter_h = 9;
-main_h = 20;
+shutter_h = 9+2;
+main_h = 22;
 
 module lens_board_base() {
     width_1 = external_board_w;
@@ -28,11 +28,11 @@ module lens_board_base() {
 
 module lens_board() {
     width = external_board_w - 5*2;
-    r = width*1.7;
+    r = width*1.9;
     h_max = main_h;
     union() {
         intersection() {
-            translate([0,0, -h_max/2 + 4])
+            translate([0,0, -h_max/2 + external_board_h])
                 cube([width, width, h_max], center=true);
             translate([0, 0, r - h_max ]){
                 sphere(r = r);
@@ -57,7 +57,7 @@ module packard_shuter_container() {
         translate([(w/2 - 6), -(w/2 - 5.5), -shutter_h/2])
             cylinder(d=2, h = thread_hole_h,center=true);
         translate([-(w/2 - 6), -(w/2 - 5.5), -shutter_h/2])
-            #cylinder(d=2, h = thread_hole_h, center=true);
+            cylinder(d=2, h = thread_hole_h, center=true);
     }
 }
 
@@ -112,7 +112,7 @@ module packard_shutter_pin() {
         union() {
             cylinder(h = h, d = d, center = true);
             translate([0, 0, -h/2])
-                cylinder(d=14, h = 9);
+                cylinder(d=14, h = 10);
             translate([0, 4.5, 0])
                 cylinder(h = h-4, d = 1.5, center = true);
             translate([0, -4.5, 0])
@@ -242,7 +242,7 @@ module lens_nut_72() {
 
 $fn= 200;
 
-//main_board();
-lens_nut_52();
+main_board();
+//lens_nut_52();
 //lens_nut_72();
 
