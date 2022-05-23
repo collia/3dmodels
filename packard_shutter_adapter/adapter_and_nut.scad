@@ -240,9 +240,29 @@ module lens_nut_72() {
     }
 }
 
+module rair_cup () {
+    extenal_d = 85;
+    handle_h = 16;
+    side_wall = 6;
+
+    difference() {
+        translate([0,0, -handle_h-1]) {
+            cylinder(d = extenal_d, h = handle_h);
+            for (i=[0:64])
+                rotate([0, 0, i*(360/64)])
+                    translate([extenal_d/2,0,0])
+                        cylinder(d = side_wall/2, h = handle_h);
+        }
+        #lens_board_thread();
+
+    }
+}
+
+
 $fn= 200;
 
-main_board();
+//main_board();
 //lens_nut_52();
 //lens_nut_72();
+rair_cup();
 
