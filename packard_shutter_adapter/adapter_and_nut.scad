@@ -2,24 +2,24 @@ include <../lib/threads.scad>
 
 // Main config
 external_board_w = 139;
-external_board_h = 3.2;
+external_board_h = 3.9;
 shutter_w = 104;
-shutter_h = 9+2;
-main_h = 22;
+shutter_h = 8+2;
+main_h = 20;
 
 module lens_board_base() {
     width_1 = external_board_w;
     height_1 = external_board_h;
     width_2 = width_1 - 2*2;
-    height_2 = 2;
-    width_3 = width_2 - 2*4;
+    height_2 = 2.6;
+    width_3 = width_2 - 2*3;
  
     union() {
         difference() {
             translate([0,0, height_1/2])
                 cube([width_1, width_1, height_1], center = true);
-            translate([0,0, height_1 - (height_1 - height_2)/2])
-                cube([width_2, width_2, height_1 - height_2], center = true);
+            translate([0,0, height_1 - height_2/2])
+                cube([width_2, width_2, height_2], center = true);
         }
         translate([0,0, height_1/2])
             cube([width_3, width_3, height_1], center = true);
@@ -28,7 +28,7 @@ module lens_board_base() {
 
 module lens_board() {
     width = external_board_w - 5*2;
-    r = width*1.9;
+    r = width*2.5;
     h_max = main_h;
     union() {
         intersection() {
@@ -47,8 +47,9 @@ module packard_shuter_container() {
     w2  = 5;
     thread_hole_h = 10;
     union() {
-        cube([w, w, shutter_h], center=true);
-        translate([w/2+w2/2, 0, 0])
+        translate([0, 0, -shutter_h/2+external_board_h])
+            cube([w, w, shutter_h], center=true);
+        translate([w/2+w2/2, 0, -shutter_h/2+external_board_h])
             cube([w2, w-2*15, shutter_h], center=true);
         translate([w/2 - 6, w/2 - 5.5, -shutter_h/2])
             cylinder(d=2, h = thread_hole_h, center=true);
@@ -113,6 +114,22 @@ module packard_shutter_pin() {
             cylinder(h = h, d = d, center = true);
             translate([0, 0, -h/2])
                 cylinder(d=14, h = 10);
+            translate([0, 4.5, 0])
+                cylinder(h = h-4, d = 1.5, center = true);
+            translate([0, -4.5, 0])
+                cylinder(h = h-4, d = 1.5, center = true);
+        }
+    }
+}
+
+module packard_shutter_pin_nut() {
+    d = 3;
+    h = main_h;
+    translate([shutter_w/2 - 12, -(shutter_w/2 - 25), -h/2]){
+        difference() {
+            
+            cylinder(d=13.5, h = 3.5);
+            cylinder(h = h, d = d, center = true);
             translate([0, 4.5, 0])
                 cylinder(h = h-4, d = 1.5, center = true);
             translate([0, -4.5, 0])
@@ -261,8 +278,9 @@ module rair_cup () {
 
 $fn= 200;
 
-//main_board();
+main_board();
+//lens_nut_42();
 //lens_nut_52();
 //lens_nut_72();
-rair_cup();
-
+//rair_cup();
+//packard_shutter_pin_nut();
