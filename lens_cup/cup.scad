@@ -1,12 +1,12 @@
 
 module lens_cup(d) {
-    coef = 0.6;
+    coef = 0;
     internal_d_1 = d + coef;
     internal_d_2 = d - coef;
-    side_width = 1;
+    side_width = 0.5;
     height =  7;
 
-    $fn = 50;
+    $fn = 150;
     difference() {
         minkowski() {
             union() {
@@ -22,4 +22,5 @@ module lens_cup(d) {
     }
 };
 
-lens_cup(42.1);
+//lens_cup(46);
+lens_cup(68);
