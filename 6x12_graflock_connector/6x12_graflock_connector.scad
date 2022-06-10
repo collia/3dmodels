@@ -5,24 +5,24 @@ frame_center_y = 0;
 
 ground_glass_offset = 13;
 
-graflock_plate_height = 4.5;
+graflock_plate_height = 6;
 film_thikness = 0.1;
 
-film_base_offset_z = -2;
+film_base_offset_z = -4;
 
 ground_glass_thikness = 3;
 
 module graflock_plate() {
-    width = 121.5;
+    width = 120;
     depth = 155;
     height = graflock_plate_height;
-    frame_center_y = -(depth - frame_depth)/2+11;
+    frame_center_y = -(depth - frame_depth)/2+12;
     difference() {
         union() {
             translate([0, 0,-height/2])
                 cube([width, depth, height], center=true);
-            translate([0, (139 - depth/2) , -height - 1.2/2])
-                cube([width, 3.5, 1.2], center=true);
+            translate([0, (140 - depth/2) , -height - 1.2/2])
+                cube([width-4, 2, 1.5], center=true);
         }
         translate([0, frame_center_y,-height/2])
             cube([frame_width, frame_depth, height], center = true);
@@ -35,13 +35,13 @@ module film_container_slider() {
     height1 = 8.7;
     //height1 = 7;
 
-    width2 = 97;
+    width2 = 98;
     depth2 = 155-1;
-    height2 = 2;
+    height2 = 1.5;
 
-    width3 = 101;
+    width3 = 103;
     depth3 = 155-1;
-    height3 = 1.6;
+    height3 = 2.2;
         
     
     union() {
@@ -51,6 +51,12 @@ module film_container_slider() {
             cube([width2, depth2, height2], center=true);
         translate([0, 0, height3/2])
             cube([width3, depth3, height3], center=true);
+        translate([width1/2-5, depth1/2-5, 0])
+            rotate([0,0,45])
+                cube([10, 10, height1]);
+        translate([-(width1/2-5), depth1/2-5, 0])
+            rotate([0,0,45])
+                cube([10, 10, height1]);
     }
 }
 
@@ -66,8 +72,8 @@ module base() {
         translate([0, 1, -offset_h])
             //scale([1.01, 1, 1])
                 film_container_slider();
-        translate([0, -1,h/2])
-                cube([97, 155, h], center = true);
+        //translate([0, -1, h/2  ])
+        //        #cube([97, 155, h], center = true);
     }
 }
 
