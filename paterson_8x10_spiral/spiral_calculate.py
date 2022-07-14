@@ -28,12 +28,14 @@ def find_spiral_parameters(int_d, ext_d, length):
 
 def calculate_spiral_dots(spiral_param, step_radian):
     theta = 0
-    result = ([], [])
+    result = (([], []), ([], []))
     (b, theta_1, theta_2) = spiral_param;
     theta = theta_1
     while theta < theta_2:
-        result[0].append(theta-theta_1)
-        result[1].append(b*theta)
+        result[0][0].append(theta-theta_2)
+        result[0][1].append(b*theta)
+        result[1][0].append(theta-theta_2 + math.pi)
+        result[1][1].append(b*theta)
         theta = theta + step_radian
     return result
 
@@ -42,7 +44,8 @@ def print_graph(dots, ext_d):
     fig = plt.figure(figsize=(ext_d/25.4, ext_d/25.4), dpi=100, frameon=False)
 
     #ax = fig.add_subplot(111)
-    p = plt.polar(dots[0], dots[1], '-', linewidth=4)
+    p = plt.polar(dots[0][0], dots[0][1], '-', linewidth=4)
+    p = plt.polar(dots[1][0], dots[1][1], '-', linewidth=4)
     plt.axis("off")
 
     mp.rcParams['lines.linewidth'] = 40
