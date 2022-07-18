@@ -1,12 +1,14 @@
 spiral_height = 5;
 spiral_dia_ext = 93;
 spiral_dia_int = 36.5;
+spiral_dia_h = 63.5;
 central_hole = 26.5;
-film_height = 10*25.4;
+film_height = 8*25.4;
 connector_h = (spiral_dia_int + central_hole)/2;
 
+medium_holder_h = spiral_height + 2;
+
 module spiral() {
-    //translate([-15,-20,0]) //scale([1.2, 1.2, 0])
         linear_extrude(height = spiral_height, center = true, convexity = 10)
             import("spiral.svg", dpi=100, center=true);
 }
@@ -14,9 +16,16 @@ module spiral() {
 module film_line() {
     //minkowski() {
         difference() {
-            minkowski() {
-                spiral();
-                cylinder(r=2, h=spiral_height/3 );
+            union() {
+                minkowski() {
+                    spiral();
+                    cylinder(r=2, h=spiral_height/3 );
+                }
+                for (i = [0:4]) {
+                    rotate([0,0, (360/5)*i])
+                        translate([0,0,1])
+                            cube([spiral_dia_ext-14, 2, spiral_height + 1], center=true);
+                }
             }
             minkowski() {
                 spiral();
@@ -57,10 +66,10 @@ module leaves_enter_bottom(z) {
 module leaves_enter_side(z) {
     translate([-spiral_dia_ext/2+7, 1, z])
         rotate([0, 0, 40])
-            cube([2, 5.0, spiral_height/2+4.3], center=true);
+            cube([2, 5.0, spiral_height/2+4.1], center=true);
     translate([spiral_dia_ext/2-7, -1, z])
         rotate([0, 0, 40])
-            cube([2, 5.0, spiral_height/2+4.3], center=true);
+            cube([2, 5.0, spiral_height/2+4.1], center=true);
 }
 module leaves_enter_upper(z) {
     translate([spiral_dia_ext/2 - 2, 0, z])
@@ -86,10 +95,10 @@ module bottom() {
                     film_line();
                 side_part(-2);
                 translate([0,0,-2])
-                    cylinder(h=film_height/4+2, d=spiral_dia_int);
+                    cylinder(h=spiral_dia_h+2, d=spiral_dia_int);
                 leaves_enter_bottom(-1);
                 leaves_enter_side(spiral_height/4+1);
-                translate([0,0,film_height/4])
+                translate([0,0,spiral_dia_h])
                     connector();
             }
             translate([0,0,-2])
@@ -106,11 +115,11 @@ module upper() {
                 translate([0, 0, -spiral_height/2-1.5])
                     film_line();
                 side_part(0);
-                translate([0,0,-film_height/4])
-                    cylinder(h=film_height/4+2, d=spiral_dia_int);
+                translate([0,0,-spiral_dia_h])
+                    cylinder(h=spiral_dia_h+2, d=spiral_dia_int);
                 leaves_enter_bottom(1);
                 leaves_enter_side(-spiral_height/2-0.6);
-                translate([0,0,-film_height/4-connector_h])
+                translate([0,0,-spiral_dia_h-connector_h])
                     connector();
             }
             translate([0,0,-film_height])
@@ -122,18 +131,36 @@ module upper() {
 
 module medium() {
     difference() {
-            cylinder(h=film_height/2, d=spiral_dia_int);
-        translate([0, 0, 0])
-            scale([1.02, 1.02, 1.02])
+        cylinder(h=film_height - spiral_dia_h*2 - 2*medium_holder_h, d=spiral_dia_int);
+        translate([0, 0, -medium_holder_h])
+            scale([1.01, 1.01, 1.01])
               connector();
-        translate([0,0,0])
-              cylinder(h=film_height+2, d=central_hole);
-        translate([0, 0, film_height/2-connector_h])
-            scale([1.02, 1.02, 1.02])
+        cylinder(h=film_height+2, d=central_hole-0.5);
+        translate([0, 0, film_height - spiral_dia_h*2-connector_h - medium_holder_h])
+            scale([1.01, 1.01, 1.01])
               connector();
     }
 }
 
+module medium_holder() {
+    difference() {
+        union() {
+            translate([0, 0, spiral_height/2])
+                    film_line();
+            cylinder(h=medium_holder_h, d=spiral_dia_int);
+            leaves_enter_side(3.3);
+            translate([spiral_dia_int/2 + 3, 1, medium_holder_h/2])
+                cube([10, 6, medium_holder_h], center = true);
+            translate([-(spiral_dia_int/2 + 3), -1, medium_holder_h/2])
+                cube([10, 6, medium_holder_h], center = true);
+        }
+        translate([0,0,-connector_h/2])
+            scale([1.02, 1.02, 1.00])
+                connector();
+        leaves_enter_upper(3);
+    }
+}
 //bottom();
 //upper();
 medium();
+//medium_holder();
