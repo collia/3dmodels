@@ -77,39 +77,34 @@ def get_bottom_spirale_profile(base_point):
     axe_y = madcad.Axis(O,Y)
 
 
-    p1 = [madcad.Point(-3, 0, 0),
-          madcad.Point(-2.8, 0, 2),
-          madcad.Point(-1.4, 0, 4),
-          madcad.Point(-1.2, 0, 2),
-          madcad.Point(-1, 0, 0)]
-    p2 = [madcad.Point(3, 0, 0),
-          madcad.Point(2.8, 0, 2),
-          madcad.Point(1.4, 0, 4),
-          madcad.Point(1.2, 0, 2),
-          madcad.Point(1, 0, 0)]
+    p1 = madcad.flatsurface(madcad.wire(madcad.Softened([madcad.Point(-3, 0, 0),
+                                                         madcad.Point(-2.8, 0, 2),
+                                                         madcad.Point(-1.4, 0, 4),
+                                                         madcad.Point(-1.2, 0, 2),
+                                                         madcad.Point(-1, 0, 0)])))
+    p2 = madcad.flatsurface(madcad.wire(madcad.Softened([madcad.Point(3, 0, 0),
+                                                         madcad.Point(2.8, 0, 2),
+                                                         madcad.Point(1.4, 0, 4),
+                                                         madcad.Point(1.2, 0, 2),
+                                                         madcad.Point(1, 0, 0)])))
 
-    p3 = [madcad.Point(-3, 0, 0),
-          madcad.Point(-3, 0, -2),
-          madcad.Point(-1, 0, -2),
-          madcad.Point(-1, 0, 0)]
-    p4 = [madcad.Point(3, 0, 0),
-          madcad.Point(3, 0, -2),
-          madcad.Point(1, 0, -2),
-          madcad.Point(1, 0, 0)]
+    p3 = madcad.flatsurface(madcad.wire([madcad.Point(-3, 0, 0),
+                                         madcad.Point(-3, 0, -2),
+                                         madcad.Point(-1, 0, -2),
+                                         madcad.Point(-1, 0, 0)]))
+    p4 = madcad.flatsurface(madcad.wire([madcad.Point(3, 0, 0),
+                                         madcad.Point(3, 0, -2),
+                                         madcad.Point(1, 0, -2),
+                                         madcad.Point(1, 0, 0)]))
     angle =- madcad.anglebt(Y, base_point[1]-base_point[0])
 
     rotate = madcad.rotatearound(angle, axe_z)
 
+    return [p1.transform(rotate).transform(base_point[0]),
+            p2.transform(rotate).transform(base_point[0]),
+            p3.transform(rotate).transform(base_point[0]),
+            p4.transform(rotate).transform(base_point[0])]
 
-#    return madcad.web(madcad.Softened(p1), madcad.Segment(p1[0], p1[-1]),
-#               madcad.Softened(p2), madcad.Segment(p2[0], p2[-1]),
-#               madcad.Segment(p3[0], p3[1]), madcad.Segment(p3[1], p3[2]), madcad.Segment(p3[2], p3[3]), madcad.Segment(p3[3], p3[0]),
-#               madcad.Segment(p4[0], p4[1]), madcad.Segment(p4[1], p4[2]), madcad.Segment(p4[2], p4[3]), madcad.Segment(p4[3], p4[0])
-#               ).transform(rotate).transform(base_point[0])
-    return [madcad.flatsurface(madcad.wire([madcad.Softened(p1), madcad.Segment(p1[0], p1[-1])]).transform(rotate).transform(base_point[0])),
-            madcad.wire(madcad.Softened(p2), madcad.Segment(p2[0], p2[-1])).transform(rotate).transform(base_point[0]),
-            madcad.wire(madcad.Segment(p3[0], p3[1]), madcad.Segment(p3[1], p3[2]), madcad.Segment(p3[2], p3[3]), madcad.Segment(p3[3], p3[0])).transform(rotate).transform(base_point[0]),
-            madcad.wire(madcad.Segment(p4[0], p4[1]), madcad.Segment(p4[1], p4[2]), madcad.Segment(p4[2], p4[3]), madcad.Segment(p4[3], p4[0])).transform(rotate).transform(base_point[0])]
 
 def get_bottom_suport_profile(base_point):
     O = madcad.Point(0, 0, 0)
@@ -120,10 +115,10 @@ def get_bottom_suport_profile(base_point):
     axe_y = madcad.Axis(O,Y)
 
 
-    p = [madcad.Point(-1, 0, 0),
-         madcad.Point(-1, 0, -2),
-         madcad.Point( 1, 0, -2),
-         madcad.Point( 1, 0, 0)]
+    p = madcad.flatsurface(madcad.wire([madcad.Point(-1, 0, 0),
+                                        madcad.Point(-1, 0, -2),
+                                        madcad.Point( 1, 0, -2),
+                                        madcad.Point( 1, 0, 0)]))
     angle = madcad.anglebt(Y, base_point[1] - base_point[0])
     #if(angle > math.pi/2):
     if base_point[1].x > 0:
@@ -134,35 +129,7 @@ def get_bottom_suport_profile(base_point):
     rotate = madcad.rotatearound(angle, axe_z)
     #print(rotate)
 
-    #p1 = [madcad.transform(p, rotate) for p in p1]base_point
-    return madcad.web(madcad.Segment(p[0], p[1]), madcad.Segment(p[1], p[2]), madcad.Segment(p[2], p[3]), madcad.Segment(p[3], p[0])).transform(rotate).transform(base_point[0])
-
-def get_medium_suport_profile(base_point):
-    O = madcad.Point(0, 0, 0)
-    X = madcad.Point(1, 0, 0)
-    Y = madcad.Point(0, 1, 0)
-    Z = madcad.Point(0, 0, 1)
-    axe_z = madcad.Axis(O,Z)
-    axe_y = madcad.Axis(O,Y)
-
-
-    p = [madcad.Point(-1, 0, 2),
-         madcad.Point(-1, 0, -2),
-         madcad.Point( 1, 0, -2),
-         madcad.Point( 1, 0, 2)]
-    angle = madcad.anglebt(Y, base_point[1] - base_point[0])
-
-    if base_point[1].x > 0:
-        angle = -angle
-    
-    #print(angle)
-    #print(base_point[1])
-    rotate = madcad.rotatearound(angle, axe_z)
-    #print(rotate)
-
-    #p1 = [madcad.transform(p, rotate) for p in p1]base_point
-    return web(madcad.Segment(p[0], p[1]), madcad.Segment(p[1], p[2]), madcad.Segment(p[2], p[3]), madcad.Segment(p[3], p[0])).transform(rotate).transform(base_point[0])
-
+    return p.transform(rotate).transform(base_point[0])
 
 def generate_bottom_spiral(dots, support):
     lines = []
@@ -171,34 +138,21 @@ def generate_bottom_spiral(dots, support):
     for line in dots:
         profile = get_bottom_spirale_profile([madcad.Point(line[0][0], line[0][1], 0),
                                         madcad.Point(line[1][0], line[1][1], 0)])
-        s = madcad.tube(
-            profile,
-            madcad.Interpolated([madcad.Point(x, y, 0) for x,y in line]))
-        +  [madcad.flatsurface(p) for p in profile]
+        for p in profile:
+            tube = madcad.tube(
+                p,
+                madcad.Interpolated([madcad.Point(x, y, 0) for x,y in line]))
 
-        s.mergeclose()
-        s.check()
-        lines.append(s)
-        
-        lines.append(madcad.cylinder(madcad.Point(line[-1][0], line[-1][1], 0),
-                            madcad.Point(line[-1][0], line[-1][1], 5),
-                            4))
+            tube.mergeclose()
+            tube.check()
+            lines.append(tube)
                                          
         test.append(madcad.Interpolated([madcad.Point(x, y, 0) for x,y in line]))
         test.append(get_bottom_spirale_profile([madcad.Point(line[0][0], line[0][1], 0),
                                                 madcad.Point(line[1][0], line[1][1], 0)]))
         test.append(madcad.Point(line[0][0], line[0][1], 0) - madcad.Point(line[1][0], line[1][1], 0))
         test.append([madcad.Point(line[0][0], line[0][1], 0), madcad.Point(line[1][0], line[1][1], 0)])
-        #        lines.append(madcad.saddle(
-        #            get_bottom_spirale_profile(),
-        #            madcad.Interpolated([madcad.Point(x, y, 0) for x,y in line])))
         for s in support:
-            #for part in s:
-            #    test.append(madcad.Segment(madcad.Point(part[0][0], part[0][1], 0),
-            #                               madcad.Point(part[1][0], part[1][1], 0)));
-            #    test.append(get_bottom_suport_profile([madcad.Point(part[0][0], part[0][1], 0),
-            #                                           madcad.Point(part[1][0], part[1][1], 0)]))
-
             test.append(madcad.Segment(madcad.Point(s[0][0][0], s[0][0][1], 0),
                                        madcad.Point(s[-1][-1][0], s[-1][-1][1], 0)));
             test.append(get_bottom_suport_profile([madcad.Point(s[0][0][0], s[0][0][1], 0),
@@ -208,15 +162,17 @@ def generate_bottom_spiral(dots, support):
                                            madcad.Point(s[-1][-1][0], s[-1][-1][1], 0)]),
                 madcad.Segment(madcad.Point(s[0][0][0], s[0][0][1], 0),
                                        madcad.Point(s[-1][-1][0], s[-1][-1][1], 0))))
-    result = []
-    for l in lines:
+    result = lines[0]
+    for l in lines[1:]:
         l.check()
         if not l.issurface():
             madcad.show([l])
         assert l.issurface()
-        result = madcad.Solid(content=l)
+        #result.append( madcad.Solid(content=l))
+        result = result + l
+    result.check()
     return (result, test)
-    #return (lines, test)
+   # return (lines, test)
 
 def generate_medium_spiral(dots, support):
     lines = []
@@ -237,29 +193,9 @@ def generate_medium_spiral(dots, support):
 
 def generate_spiral_stl(dots, support):
     (lines, test) = generate_bottom_spiral(dots, support)
-    madcad.show(lines)
+    #madcad.show(lines)
     #    madcad.show(test)
-    #madcad.write(lines, "bottom_generated.stl")
-
-def test():
-    # test tubes
-    m4 = madcad.tube(
-                #Web(
-                        #[vec3(1,0,0), vec3(0,1,0), vec3(-1,0,0), vec3(0,-1,0), vec3(1,0,0)],
-                        #[(0,1),(1,2),(2,3),(3,0)],
-                        #[0,1,2,3],
-                        #),
-                #Mesh([vec3(1,0,0), vec3(0,1,0), vec3(-1,0,0), vec3(0,-1,0), vec3(1,0,0)], [(0,1,2),(2,3,0)]),
-                madcad.flatsurface(madcad.wire(madcad.Circle((madcad.vec3(0),madcad.vec3(0,0,-1)), 1))),
-                #Arc(vec3(0,0,0), vec3(4,1,4), vec3(6,0,3)).mesh()[0],
-                [madcad.vec3(0,0,0), madcad.vec3(0,0,2), madcad.vec3(1,0,3), madcad.vec3(4,0,3)],
-    )
-    m4.mergeclose()
-    m4.check()
-    assert m4.issurface()
-    #m4.options.update({'debug_display': True, 'debug_points': True})
-    m4 = m4.transform(madcad.vec3(-4,0,0))
-    madcad.show([m4])
+    madcad.write(lines, "bottom_generated.stl")
 
 def main(argv):
     int_d = 10

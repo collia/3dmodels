@@ -160,7 +160,28 @@ module medium_holder() {
         leaves_enter_upper(3);
     }
 }
+module bottom_new() {
+    //union() {
+        difference() {
+            union() {
+                //translate([0, 0, 1.5])
+                import("bottom_generated.stl");
+                translate([0,0,-2])
+                    cylinder(h=spiral_dia_h+2, d=spiral_dia_int);
+                //leaves_enter_bottom(-1);
+                //leaves_enter_side(spiral_height/4+1);
+                translate([0,0,spiral_dia_h])
+                    connector();
+            }
+            translate([0,0,-2])
+                cylinder(h=film_height, d=central_hole);
+            //leaves_enter_upper(spiral_height/2+2);
+       }
+    //}
+}
+
 //bottom();
 //upper();
-medium();
+//medium();
 //medium_holder();
+bottom_new();
