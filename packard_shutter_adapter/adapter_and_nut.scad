@@ -226,7 +226,7 @@ module lens_nut_63() {
     lens_thread_h = 23;
     lens_thread_step = 1;
     lens_thread_offset = 23;
-    lens_barrel_d = 62;
+    lens_barrel_d = 63;
     side_wall = 6;
     extenal_d = 84;
 
@@ -237,7 +237,7 @@ module lens_nut_63() {
     union() {
         difference() {
             cylinder(d = extenal_d, h = handle_h);
-            scale([1.01, 1.01, 1.0])
+            scale([1.02, 1.02, 1.0])
                 metric_thread (diameter=lens_thread_d,
                                pitch=lens_thread_step,
                                length=lens_thread_h,
