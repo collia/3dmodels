@@ -22,7 +22,7 @@ def find_spiral_parameters(int_d, ext_d, length):
             return (b, theta_1, theta_2)
         #else:
         #    print("Check spiral: b = {}, theta_1 = {}, theta2 = {}, length = {}".format(b, theta_1, theta_2, length_calculated))
-            
+
     print("Error, cannot find spiral")
     return (0,0,0)
 
@@ -38,7 +38,7 @@ def calculate_spiral_dots(spiral_param, step_radian):
     return result
 
 def calculate_support_dots(spirals, number, spiral_width):
-    
+
     result = [[] for i in range(number)]
 
     (b, theta_1, theta_2) = spirals;
@@ -63,6 +63,21 @@ def calculate_support_dots(spirals, number, spiral_width):
                                   convert_from_polar_to_cartesian_coordinates((theta, l[1] - spiral_width/2))])
         theta = theta + 2*math.pi/number
 
+    return result
+
+def calculate_enterance_dots(spirals, spiral_width, angle_offset):
+    result = []
+
+    (b, theta_1, theta_2) = spirals;
+
+    x = [(theta_2-angle_offset, b*(theta_2-angle_offset)+spiral_width),
+         (theta_2+math.pi-angle_offset, b*(theta_2-angle_offset)+spiral_width)]
+    y = [(theta_2-2*math.pi-angle_offset, b*(theta_2-math.pi*2-angle_offset)+spiral_width),
+         (theta_2-2*math.pi + math.pi -angle_offset, b*(theta_2-math.pi*2-angle_offset)+spiral_width)]
+
+    for l in zip(y,x):
+        result.append([convert_from_polar_to_cartesian_coordinates(l[0]),
+                       convert_from_polar_to_cartesian_coordinates(l[1])])
     return result
 
 def convert_from_polar_to_cartesian_coordinates(point):
@@ -123,20 +138,15 @@ def get_bottom_suport_profile(base_point):
     #if(angle > math.pi/2):
     if base_point[1].x > 0:
         angle = -angle
-    
-    #print(angle)
-    #print(base_point[1])
-    rotate = madcad.rotatearound(angle, axe_z)
-    #print(rotate)
 
+    rotate = madcad.rotatearound(angle, axe_z)
     return p.transform(rotate).transform(base_point[0])
 
-def generate_bottom_spiral(dots, support):
+def genearate_spiral(curve, support, profile_spital_generator, profile_support_generator):
     lines = []
-    test = []
 
-    for line in dots:
-        profile = get_bottom_spirale_profile([madcad.Point(line[0][0], line[0][1], 0),
+    for line in curve:
+        profile = profile_spital_generator([madcad.Point(line[0][0], line[0][1], 0),
                                         madcad.Point(line[1][0], line[1][1], 0)])
         for p in profile:
             tube = madcad.tube(
@@ -146,56 +156,52 @@ def generate_bottom_spiral(dots, support):
             tube.mergeclose()
             tube.check()
             lines.append(tube)
-                                         
-        test.append(madcad.Interpolated([madcad.Point(x, y, 0) for x,y in line]))
-        test.append(get_bottom_spirale_profile([madcad.Point(line[0][0], line[0][1], 0),
-                                                madcad.Point(line[1][0], line[1][1], 0)]))
-        test.append(madcad.Point(line[0][0], line[0][1], 0) - madcad.Point(line[1][0], line[1][1], 0))
-        test.append([madcad.Point(line[0][0], line[0][1], 0), madcad.Point(line[1][0], line[1][1], 0)])
-        for s in support:
-            test.append(madcad.Segment(madcad.Point(s[0][0][0], s[0][0][1], 0),
-                                       madcad.Point(s[-1][-1][0], s[-1][-1][1], 0)));
-            test.append(get_bottom_suport_profile([madcad.Point(s[0][0][0], s[0][0][1], 0),
-                                                   madcad.Point(s[-1][-1][0], s[-1][-1][1], 0)]))
-            lines.append(madcad.tube(
-                get_bottom_suport_profile([madcad.Point(s[0][0][0], s[0][0][1], 0),
-                                           madcad.Point(s[-1][-1][0], s[-1][-1][1], 0)]),
-                madcad.Segment(madcad.Point(s[0][0][0], s[0][0][1], 0),
-                                       madcad.Point(s[-1][-1][0], s[-1][-1][1], 0))))
+
+    for s in support:
+        lines.append(madcad.tube(
+            profile_support_generator([madcad.Point(s[0][0][0], s[0][0][1], 0),
+                                       madcad.Point(s[-1][-1][0], s[-1][-1][1], 0)]),
+            madcad.Segment(madcad.Point(s[0][0][0], s[0][0][1], 0),
+                           madcad.Point(s[-1][-1][0], s[-1][-1][1], 0))))
     result = lines[0]
     for l in lines[1:]:
         l.check()
         if not l.issurface():
             madcad.show([l])
         assert l.issurface()
-        #result.append( madcad.Solid(content=l))
         result = result + l
     result.check()
-    return (result, test)
-   # return (lines, test)
+    return result
 
-def generate_medium_spiral(dots, support):
-    lines = []
 
-    for line in dots:
-        lines.append(madcad.tube(
-            get_bottom_spirale_profile([madcad.Point(line[0][0], line[0][1], 0),
-                                        madcad.Point(line[1][0], line[1][1], 0)]),
-            madcad.Interpolated([madcad.Point(x, y, 0) for x,y in line])))
-        for s in support:
-            for part in s:
-                print(s)
-            #    test.append(madcad.Segment(madcad.Point(part[0][0], part[0][1], 0),
-            #                               madcad.Point(part[1][0], part[1][1], 0)));
-            #    test.append(get_bottom_suport_profile([madcad.Point(part[0][0], part[0][1], 0),
-            #                                           madcad.Point(part[1][0], part[1][1], 0)]))
-    return (madcad.Mesh(lines), [])
+def generate_bottom_spiral(dots, support):
+    result = genearate_spiral(dots, support, get_bottom_spirale_profile, get_bottom_suport_profile)
+    result.check()
 
-def generate_spiral_stl(dots, support):
-    (lines, test) = generate_bottom_spiral(dots, support)
-    #madcad.show(lines)
-    #    madcad.show(test)
-    madcad.write(lines, "bottom_generated.stl")
+    return result
+
+def generate_test(curve, support, enterance):
+    test = []
+
+    for line in curve:
+        test.append(madcad.Interpolated([madcad.Point(x, y, 0) for x,y in line]))
+        test.append(get_bottom_spirale_profile([madcad.Point(line[0][0], line[0][1], 0),
+                                                madcad.Point(line[1][0], line[1][1], 0)]))
+        test.append(madcad.Point(line[0][0], line[0][1], 0) - madcad.Point(line[1][0], line[1][1], 0))
+        test.append([madcad.Point(line[0][0], line[0][1], 0), madcad.Point(line[1][0], line[1][1], 0)])
+    for s in support:
+        test.append(madcad.Segment(madcad.Point(s[0][0][0], s[0][0][1], 0),
+                                   madcad.Point(s[-1][-1][0], s[-1][-1][1], 0)));
+        test.append(get_bottom_suport_profile([madcad.Point(s[0][0][0], s[0][0][1], 0),
+                                               madcad.Point(s[-1][-1][0], s[-1][-1][1], 0)]))
+    return test
+
+
+def generate_spiral_stl(dots, support, enterance_dots):
+    bottom = generate_bottom_spiral(dots, support)
+    madcad.show([bottom])
+    madcad.show(generate_test(dots, support, enterance_dots))
+    madcad.write(bottom, "bottom_generated.stl")
 
 def main(argv):
     int_d = 10
@@ -223,7 +229,8 @@ def main(argv):
     spiral_param = find_spiral_parameters(int_d, ext_d, length)
     #test()
     generate_spiral_stl(calculate_spiral_dots(spiral_param, 0.01),
-                        calculate_support_dots(spiral_param, 8, -3))
+                        calculate_support_dots(spiral_param, 8, -3),
+                        calculate_enterance_dots(spiral_param, 3, math.pi/16))
 
 
 
