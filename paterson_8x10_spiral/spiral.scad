@@ -8,6 +8,7 @@ connector_h = (spiral_dia_int + central_hole)/2;
 
 medium_holder_h = spiral_height + 2;
 
+// python spiral_calculate.py -D 90 -d 42 -l 300
 module spiral() {
         linear_extrude(height = spiral_height, center = true, convexity = 10)
             import("spiral.svg", dpi=100, center=true);
@@ -182,6 +183,5 @@ module bottom_new() {
 
 //bottom();
 //upper();
-//medium();
+medium();
 //medium_holder();
-bottom_new();
