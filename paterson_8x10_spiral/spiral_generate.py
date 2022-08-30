@@ -89,8 +89,13 @@ def calculate_enterance_dots(spirals, spiral_width, angle_offset):
 
     theta = theta_2-angle_offset
     while theta < theta_2 + angle_offset:
-        line[0].append((theta, b*(theta)+spiral_width))
-        line[1].append((theta + math.pi, b*(theta)+spiral_width))
+        if theta < theta_2:
+            line[0].append((theta, b*(theta)+spiral_width))
+            line[1].append((theta + math.pi, b*(theta)+spiral_width))
+        else:
+            line[0].append((theta, b*(theta_2)+spiral_width))
+            line[1].append((theta + math.pi, b*(theta_2)+spiral_width))
+
         theta = theta + 0.01
 
     while theta > theta_2 - angle_offset:
@@ -337,9 +342,9 @@ def generate_spiral_stl(dots, support, enterance_dots, h, d_int):
     h_med = 7
     #madcad.show(generate_test(dots, support, enterance_dots))
     bottom = generate_bottom_spiral(dots, support, enterance_dots, h/3 - 2*h_med, h/6-3, d_int)
-    madcad.show([bottom])
+    #madcad.show([bottom])
 
-    #madcad.write(bottom, "bottom_generated.stl")
+    madcad.write(bottom, "bottom_generated.stl")
 
 def main(argv):
     int_d = 42
