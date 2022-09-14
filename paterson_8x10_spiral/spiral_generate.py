@@ -271,14 +271,73 @@ def get_medium_suport_profile(base_point):
     rotate = madcad.rotatearound(angle, axe_z)
     return p.transform(rotate).transform(base_point[0])
 
+def get_upper_spirale_profile(base_point):
+    O = madcad.Point(0, 0, 0)
+    X = madcad.Point(1, 0, 0)
+    Y = madcad.Point(0, 1, 0)
+    Z = madcad.Point(0, 0, 1)
+    axe_z = madcad.Axis(O,Z)
+    axe_y = madcad.Axis(O,Y)
+
+    p1 = madcad.flatsurface(madcad.wire(madcad.Softened([madcad.Point(-3, 0, 0),
+                                                         madcad.Point(-2.8, 0, -2),
+                                                         madcad.Point(-1.4, 0, -4),
+                                                         madcad.Point(-1.2, 0, -2),
+                                                         madcad.Point(-1, 0, 0)])))
+    p2 = madcad.flatsurface(madcad.wire(madcad.Softened([madcad.Point(1, 0, 0),
+                                                         madcad.Point(1.2, 0, -2),
+                                                         madcad.Point(1.4, 0, -4),
+                                                         madcad.Point(2.8, 0, -2),
+                                                         madcad.Point(3, 0, 0)])))
+
+    p3 = madcad.flatsurface(madcad.wire([madcad.Point(-1, 0, 0),
+                                         madcad.Point(-1, 0, 2),
+                                         madcad.Point(-3, 0, 2),
+                                         madcad.Point(-3, 0, 0)]))
+    p4 = madcad.flatsurface(madcad.wire([madcad.Point(3, 0, 0),
+                                         madcad.Point(3, 0, 2),
+                                         madcad.Point(1, 0, 2),
+                                         madcad.Point(1, 0, 0)]))
+    angle =- madcad.anglebt(Y, base_point[1]-base_point[0])
+    if base_point[1].x < 0:
+        angle = -angle
+    rotate = madcad.rotatearound(angle, axe_z)
+
+    return [p1.transform(rotate).transform(base_point[0]),
+            p2.transform(rotate).transform(base_point[0]),
+            p3.transform(rotate).transform(base_point[0]),
+            p4.transform(rotate).transform(base_point[0])]
+
+def get_upper_spirale_enterance_profile(base_point):
+    return get_upper_spirale_profile(base_point)[0]
+
+def get_upper_suport_profile(base_point):
+    O = madcad.Point(0, 0, 0)
+    X = madcad.Point(1, 0, 0)
+    Y = madcad.Point(0, 1, 0)
+    Z = madcad.Point(0, 0, 1)
+    axe_z = madcad.Axis(O,Z)
+    axe_y = madcad.Axis(O,Y)
+
+
+    p = madcad.flatsurface(madcad.wire([madcad.Point( 1, 0, 0),
+                                        madcad.Point( 1, 0, 2),
+                                        madcad.Point(-1, 0, 2),
+                                        madcad.Point(-1, 0, 0)]))
+    angle = madcad.anglebt(Y, base_point[1] - base_point[0])
+    #if(angle > math.pi):
+    if base_point[1].x > 0:
+        angle = -angle
+    rotate = madcad.rotatearound(angle, axe_z)
+    return p.transform(rotate).transform(base_point[0])
 
 def central_column(h, offset = -2):
     r = 36.5/2
     return madcad.cylinder(madcad.Point(0, 0, offset), madcad.Point(0, 0, h), radius = r)
 
-def central_column_hole(h, d):
+def central_column_hole(h, d, offset = -2):
     r = d/2
-    return madcad.cylinder(madcad.Point(0, 0, -2), madcad.Point(0, 0, h), radius = r)
+    return madcad.cylinder(madcad.Point(0, 0, offset), madcad.Point(0, 0, h), radius = r)
 
 def genearate_spiral(curve, support, profile_spital_generator, profile_support_generator, is_simplifiied_support=True):
     lines = []
@@ -396,6 +455,28 @@ def generate_medium_spiral(dots, support, enterance_lines, h, d_int):
     result += female_connector(h, d_int).transform(madcad.Point(0,0,-h/2))
     return result
 
+def generate_upper_spiral(dots, support, enterance_lines, h, h_conn, d_int):
+    ent_vector = madcad.Point(0, 0, -2)
+
+    result = genearate_spiral(dots, support, get_upper_spirale_profile, get_upper_suport_profile)
+    result.check()
+
+    for l in enterance_lines[0]:
+        line = [madcad.Point(p[0], p[1], 0) for p in l]
+        result = result + madcad.extrusion(ent_vector, madcad.flatsurface(madcad.wire(line))).transform(madcad.Point(0, 0, 2))
+    for l in enterance_lines[1]:
+        line = [madcad.Point(p[0], p[1], 0) for p in l]
+        result = result + madcad.tube(
+            get_upper_spirale_enterance_profile([line[0], line[1]]),
+            madcad.wire(madcad.Softened(line)))
+    result += madcad.difference(central_column(-h, offset=2), central_column_hole(-h, d_int, offset=2))
+    result += male_connector(h_conn, d_int).transform(madcad.Point(0,0,-h-h_conn))
+    return result
+
+def generate_connector(h, d_int):
+    result = female_connector(h, d_int).transform(madcad.Point(0,0,-h/2))
+    return result
+
 def generate_test(curve, support, enterance):
     test = []
 
@@ -448,13 +529,28 @@ def test(hole_d):
 
 def generate_spiral_stl(dots, support_side, support_middle, enterance_dots, h, d_int):
     h_med = 7
-    madcad.show(generate_test(dots, support_middle, enterance_dots))
+    #madcad.show(generate_test(dots, support_middle, enterance_dots))
     bottom = generate_bottom_spiral(dots, support_side, enterance_dots, h/3 - 2*h_med, h/6-3, d_int)
     #madcad.show([bottom])
     medium = generate_medium_spiral(dots, support_middle, enterance_dots, h_med, d_int)
-    madcad.show([medium])
-    #madcad.write(bottom, "bottom_generated.stl")
+    #madcad.show([medium])
+    upper = generate_upper_spiral(dots, support_side, enterance_dots, h/3 - 2*h_med, h/6-3, d_int)
+    #madcad.show([upper])
+    connector = generate_connector( h/3, d_int)
+    #madcad.show([connector])
+
+    madcad.show([
+        bottom.transform(madcad.Point(0,0,-145)),
+        medium.transform(madcad.Point(0,0,-45)),
+        connector.transform(madcad.Point(0,0,0)),
+        medium.transform(madcad.Point(0,0,45)),
+        upper.transform(madcad.Point(0,0,145))
+        ])
+
+    madcad.write(bottom, "bottom_generated.stl")
     madcad.write(medium, "medium_generated.stl")
+    madcad.write(upper, "upper_generated.stl")
+    madcad.write(connector, "connector_generated.stl")
 
 def main(argv):
     int_d = 42
