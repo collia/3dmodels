@@ -529,27 +529,31 @@ def test(hole_d):
 
 def generate_spiral_stl(dots, support_side, support_middle, enterance_dots, h, d_int):
     h_med = 7
+    #due to error of first print - hardcode side
+    h_side = 54
     #madcad.show(generate_test(dots, support_middle, enterance_dots))
-    bottom = generate_bottom_spiral(dots, support_side, enterance_dots, h/3 - 2*h_med, h/6-3, d_int)
+    bottom = generate_bottom_spiral(dots, support_side, enterance_dots, h_side, h/6-3, d_int)
     #madcad.show([bottom])
     medium = generate_medium_spiral(dots, support_middle, enterance_dots, h_med, d_int)
     #madcad.show([medium])
-    upper = generate_upper_spiral(dots, support_side, enterance_dots, h/3 - 2*h_med, h/6-3, d_int)
+    upper = generate_upper_spiral(dots, support_side, enterance_dots, h_side, h/6-3, d_int)
     #madcad.show([upper])
-    connector = generate_connector( h/3, d_int)
+    connector = generate_connector(h - 2*h_side - 2*h_med, d_int)
     #madcad.show([connector])
-
+    print( h_side)
+    print(h - 2*h_side - 2*h_med)
+    print(h)
     madcad.show([
         bottom.transform(madcad.Point(0,0,-145)),
-        medium.transform(madcad.Point(0,0,-45)),
+        medium.transform(madcad.Point(0,0,-50)),
         connector.transform(madcad.Point(0,0,0)),
-        medium.transform(madcad.Point(0,0,45)),
+        medium.transform(madcad.Point(0,0,50)),
         upper.transform(madcad.Point(0,0,145))
         ])
 
-    madcad.write(bottom, "bottom_generated.stl")
-    madcad.write(medium, "medium_generated.stl")
-    madcad.write(upper, "upper_generated.stl")
+    #madcad.write(bottom, "bottom_generated.stl")
+    #madcad.write(medium, "medium_generated.stl")
+    #madcad.write(upper, "upper_generated.stl")
     madcad.write(connector, "connector_generated.stl")
 
 def main(argv):
