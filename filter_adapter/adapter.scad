@@ -1,9 +1,12 @@
 
 D_ext = 84;
 //D_int = 42;
-D_int = 38;
+//D_int = 38;
+//D_int = 51-0.5;
+D_int = 46-0.5;
 H_ext = 1.5;
-H_int = 6;
+//H_int = 6;
+H_int = 8;
 Wall_int = 1.5;
 
 module profile() {
@@ -24,7 +27,7 @@ module profile() {
     }
 }
 
-$fn = 50;
+$fn = 100;
 rotate_extrude(angle = 360)
     translate([D_int/2, 0])
         profile();
