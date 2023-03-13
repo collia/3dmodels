@@ -123,6 +123,40 @@ def calculate_enterance_dots(spirals, spiral_width, angle_offset):
         upper[1].append(convert_from_polar_to_cartesian_coordinates(l))
     return (bottom, upper)
 
+def calculate_central_support_dots(spirals, spiral_width, angle_offset):
+    bottom =[ [], []]
+    upper =[ [], []]
+    line =[ [], []]
+    enter_upper = [[], []]
+
+    (b, theta_1, theta_2) = spirals;
+
+    theta = theta_1-angle_offset
+    while theta < theta_1 + angle_offset:
+        if theta < theta_1:
+            line[0].append((theta, b*(theta)+spiral_width))
+            line[1].append((theta + math.pi, b*(theta)+spiral_width))
+        else:
+            line[0].append((theta, b*(theta)+spiral_width))
+            line[1].append((theta + math.pi, b*(theta)+spiral_width))
+
+        theta = theta + 0.01
+
+    while theta > theta_1 - angle_offset:
+        line[0].append((theta, b*(theta_1)-spiral_width*1.5))
+        line[1].append((theta + math.pi, b*(theta_1)-spiral_width*1.5))
+        theta = theta - 0.01
+
+    line[0].append(line[0][0])
+    line[1].append(line[1][0])
+
+    for l in line[0]:
+        bottom[0].append(convert_from_polar_to_cartesian_coordinates(l))
+    for l in line[1]:
+        bottom[1].append(convert_from_polar_to_cartesian_coordinates(l))
+
+    return bottom
+
 def convert_from_polar_to_cartesian_coordinates(point):
     return (point[1]*math.cos(point[0]), point[1]*math.sin(point[0]))
 
@@ -393,14 +427,14 @@ def genearate_spiral(curve, support, profile_spital_generator, profile_support_g
                                                        madcad.Point(ss[-1][0], ss[-1][1], 0)]),
                             madcad.Segment(madcad.Point(ss[0][0], ss[0][1], 0),
                                            madcad.Point(ss[-1][0], ss[-1][1], 0))))
-    else:
-        for s in support:
-            #for ss in [s[0]]:
-            lines.append(madcad.tube(
-                profile_support_generator([madcad.Point(s[0][0][0], s[0][0][1], 0),
-                                           madcad.Point(s[1][0][0], s[1][0][1], 0)]),
-                madcad.Segment(madcad.Point(s[0][0][0], s[0][0][1], 0),
-                               madcad.Point(s[1][0][0], s[1][0][1], 0))))
+    #else:
+        #for s in support:
+        #for s in [support[0]]:
+        #    lines.append(madcad.tube(
+        #        profile_support_generator([madcad.Point(s[0][0][0], s[0][0][1], 0),
+        #                                   madcad.Point(s[1][0][0], s[1][0][1], 0)]),
+        #        madcad.Segment(madcad.Point(s[0][0][0], s[0][0][1], 0),
+        #                       madcad.Point(s[1][0][0], s[1][0][1], 0))))
 
     result = lines[0]
     for l in lines[1:]:
@@ -469,8 +503,8 @@ def generate_bottom_spiral(dots, support, enterance_lines, h, h_conn, d_int):
     result += male_connector(h_conn, d_int).transform(madcad.Point(0,0,h))
     return result
 
-def generate_medium_spiral(dots, support, enterance_lines, h, d_int):
-    ent_vector = madcad.Point(0, 0, -2)
+def generate_medium_spiral(dots, support, enterance_lines, suppot_dots, h, d_int):
+    ent_vector = madcad.Point(0, 0, -h)
 
     result = genearate_spiral(dots, support, get_medium_spirale_profile, get_medium_suport_profile,  False, False)
     result.check()
@@ -480,6 +514,10 @@ def generate_medium_spiral(dots, support, enterance_lines, h, d_int):
         result = result + madcad.tube(
             get_medium_spirale_enterance_profile([line[0], line[1]]),
             madcad.wire(madcad.Softened(line)))
+
+    for l in suppot_dots:
+        line = [madcad.Point(p[0], p[1], 0) for p in l]
+        result = result + madcad.extrusion(ent_vector, madcad.flatsurface(madcad.wire(line))).transform(madcad.Point(0, 0, h/2))
     #result += central_column(h)
     #result = madcad.pierce(result, central_column_hole(h))
     #result += madcad.difference(central_column(h), central_column_hole(h, d_int))
@@ -558,15 +596,15 @@ def test(hole_d):
     #madcad.show([result])
     #madcad.show([profile])
 
-def generate_spiral_stl(dots, support_side, support_middle, enterance_dots, h, d_int):
+def generate_spiral_stl(dots, support_side, support_middle, enterance_dots, central_support_dots, h, d_int):
     h_med = 7
     #due to error of first print - hardcode side
     h_side = 54
-    madcad.show(generate_test(dots, support_middle, enterance_dots))
+    #madcad.show(generate_test(dots, support_middle, enterance_dots))
     bottom = generate_bottom_spiral(dots, support_side, enterance_dots, h_side, h/6-3, d_int)
     #madcad.show([bottom])
-    medium = generate_medium_spiral(dots, support_middle, enterance_dots, h_med, d_int)
-    #madcad.show([medium])
+    medium = generate_medium_spiral(dots, support_middle, enterance_dots, central_support_dots, h_med, d_int)
+    madcad.show([medium])
     upper = generate_upper_spiral(dots, support_side, enterance_dots, h_side, h/6-3, d_int)
     #madcad.show([upper])
     connector = generate_connector(h - 2*h_side - 2*h_med, d_int)
@@ -618,6 +656,7 @@ def main(argv):
                         calculate_support_dots(spiral_param, 8, -4, hole_d),
                         calculate_support_dots(spiral_param, 8, 4.5, 36.5-1),
                         calculate_enterance_dots(spiral_param, 3, math.pi/12),
+                        calculate_central_support_dots(spiral_param, 3, math.pi/6),
                         height,
                         hole_d)
 
