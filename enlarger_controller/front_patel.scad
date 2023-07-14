@@ -17,7 +17,7 @@ module plate() {
 
 module encoder_hole() {
     translate([0,0, 4/2])
-        cylinder(h=4, d=7, center =true);
+        cylinder(h=6, d=7, center =true);
 }
 
 
@@ -32,6 +32,7 @@ module switch_hole() {
 }
 
 difference() {
+    $fn = 100;
     plate();
     translate([0, plate_y/2-30, 0])
         screen_hole();
