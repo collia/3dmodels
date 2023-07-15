@@ -139,9 +139,12 @@ module lens_nut() {
     pitch =5/9;
     h =5;
     difference() {
-        cylinder(h, d=57, $fn=128);
+        union() {
+            cylinder(h-1, d=57, $fn=128);
+            cylinder(h, d=38, $fn=128);
+        }
         scale([1.01, 1.01, 1])
-            metric_thread (diameter=d, pitch=pitch, length=h, internal=true, n_starts=1, test=true );
+            metric_thread (diameter=d, pitch=pitch, length=h, internal=true, n_starts=1, test=false );
         
     }
 }
@@ -150,7 +153,7 @@ module platform() {
     difference() {
         cylinder(h, d=40, $fn=128);
         scale([1.01, 1.01,1])
-            #english_thread (diameter=1/4, threads_per_inch=20, length=h/25.4, internal=true, test=true);
+            english_thread (diameter=1/4, threads_per_inch=20, length=h/25.4, internal=true, test=false);
     }
 }
 
@@ -162,7 +165,7 @@ module camera() {
                 base();
         translate([0, 3, 0])
         difference() {
-            shape(57, 120, 155-6, h);
+            shape(57, 120, 155-6, h-3);
             shape(32, frame_width, frame_depth, h);
         };
         translate([0,3,h-5])
