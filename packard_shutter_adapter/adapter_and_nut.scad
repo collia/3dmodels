@@ -44,13 +44,25 @@ module lens_board() {
 
 module packard_shuter_container() {
     w = shutter_w;
-    w2  = 5;
-    thread_hole_h = 10;
+    w2  = 6;
+    thread_hole_h = 12;
+    flash_sync_hole_d1 = 5.3;
+    flash_sync_hole_d2 = 8;
+    flash_sync_h1 = 10;
     union() {
         translate([0, 0, -shutter_h/2+external_board_h])
             cube([w, w, shutter_h], center=true);
         translate([w/2+w2/2, 0, -shutter_h/2+external_board_h])
             cube([w2, w-2*15, shutter_h], center=true);
+        translate([w/2+w2/2, w/2-15-10, -shutter_h]) {
+            union() {
+                cylinder(d=flash_sync_hole_d1, h = flash_sync_h1, center=true);
+                translate([0, 0, -4])
+                    cylinder(d=flash_sync_hole_d2, h = flash_sync_h1, center=true);
+                translate([0, 0, -4-3])
+                    cylinder(d=flash_sync_hole_d2*3, h = flash_sync_h1, center=true);
+            }
+        }
         translate([w/2 - 6, w/2 - 5.5, -shutter_h/2])
             cylinder(d=2, h = thread_hole_h, center=true);
         translate([-(w/2 - 6), (w/2 - 5.5), -shutter_h/2])
@@ -314,10 +326,11 @@ module rair_cup () {
 
 $fn= 200;
 
-//main_board();
+main_board();
 //lens_nut_42();
 //lens_nut_52();
-lens_nut_63();
+//lens_nut_63();
 //lens_nut_72();
 //rair_cup();
 //packard_shutter_pin_nut();
+//packard_shuter_container();
