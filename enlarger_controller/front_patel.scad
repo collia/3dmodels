@@ -16,14 +16,14 @@ module plate() {
             }
         }
         translate([plate_x/2-20, -plate_y/2+20, (plate_z+4)/2])
-            cylinder(d=13.5, h=(plate_z+4));
+            cylinder(d=13.5, h=(plate_z));
 }
 
 module encoder_hole() {
     translate([0,0, 4/2])
         cylinder(h=6, d=7, center =true);
-    translate([10-7/2,0, 1/2])
-        cylinder(h=1, d=3, center =true);
+    translate([10-7/2,0, 3/2])
+        cylinder(h=3, d=3, center =true);
 }
 
 
