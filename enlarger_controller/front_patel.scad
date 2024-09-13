@@ -7,6 +7,10 @@ module screen_hole() {
     translate([0,0,7.5/2])
         cube([60.5, 14.5, 7.5], center=true);
 }
+module screen_hole_lcd() {
+    translate([0,0,7.5/2])
+        cube([71, 24.5, 7.5], center=true);
+}
 module plate() {
     union() {
         translate([0,0, plate_z/2])
@@ -15,7 +19,9 @@ module plate() {
                 cylinder(d1=3, d2=0, h=plate_z/4);
             }
         }
-        translate([plate_x/2-20, -plate_y/2+20, (plate_z+4)/2])
+        //translate([plate_x/2-20, -plate_y/2+20, (plate_z+4)/2])
+        //    cylinder(d=13.5, h=(plate_z));
+        translate([0, -plate_y/2+20, (plate_z+4)/2])
             cylinder(d=13.5, h=(plate_z));
 }
 
@@ -37,7 +43,7 @@ module switch_hole() {
         cylinder(h=8, d=6, center =true);
 }
 
-module texts() {
+module texts_rev_2() {
     translate([plate_x/2-20, -plate_y/2+30, plate_z-1]) {
         linear_extrude(height = 1) {
             text("start", size = 5, halign="center");
@@ -70,20 +76,92 @@ module texts() {
     }
 }
 
-difference() {
-    $fn = 100;
-    plate();
-    translate([0, plate_y/2-30, 0])
-        screen_hole();
-    translate([plate_x/2 - 20, plate_y/2-50, 0])
-        encoder_hole();
-    translate([-plate_x/2 + 20, plate_y/2-50, 0])
-        encoder_hole();
-    translate([0, -plate_y/2+50, 0])
-        encoder_hole();
-    translate([plate_x/2-20, -plate_y/2+20, 0])
-        button_hole();
-    translate([-plate_x/2+20, -plate_y/2+20, 0])
-        switch_hole();
-    texts();
+module texts_rev_3() {
+    translate([0, -plate_y/2+30, plate_z-1]) {
+        linear_extrude(height = 1) {
+            text("start", size = 5, halign="center");
+        }
+    }
+
+    translate([plate_x/2-30, plate_y/2-50, plate_z-1]) {
+        linear_extrude(height = 1) {
+            text("brigh", size = 3, halign="center");
+        }
+    }
+    translate([plate_x/2-10, plate_y/2-50, plate_z-1]) {
+        linear_extrude(height = 1) {
+            text("contr", size = 3, halign="center");
+        }
+    }
+    translate([plate_x/2-20, plate_y/2-44, plate_z-1]) {
+        linear_extrude(height = 1) {
+            text("time", size = 3, halign="center");
+        }
+    }
+    
+    translate([plate_x/2-10, plate_y/2-70, plate_z-1]) {
+        linear_extrude(height = 1) {
+            text("focus", size = 3, halign="center");
+        }
+    }
+    translate([plate_x/2-30, plate_y/2-70, plate_z-1]) {
+        linear_extrude(height = 1) {
+            text("red", size = 3, halign="center");
+        }
+    }
+    translate([plate_x/2-30, plate_y/2-90, plate_z-1]) {
+        linear_extrude(height = 1) {
+            text("test", size = 3, halign="center");
+        }
+    }
+    translate([plate_x/2-10, plate_y/2-90, plate_z-1]) {
+        linear_extrude(height = 1) {
+            text("print", size = 3, halign="center");
+        }
+    }
+    translate([plate_x/2-20, plate_y/2-84, plate_z-1]) {
+        linear_extrude(height = 1) {
+            text("step", size = 3, halign="center");
+        }
+    }
 }
+
+module rev_2() {
+    difference() {
+        $fn = 100;
+        plate();
+        translate([0, plate_y/2-30, 0])
+            screen_hole();
+        translate([plate_x/2 - 20, plate_y/2-50, 0])
+            encoder_hole();
+        translate([-plate_x/2 + 20, plate_y/2-50, 0])
+            encoder_hole();
+        translate([0, -plate_y/2+50, 0])
+            encoder_hole();
+        translate([plate_x/2-20, -plate_y/2+20, 0])
+            button_hole();
+        translate([-plate_x/2+20, -plate_y/2+20, 0])
+            switch_hole();
+        texts();
+    }
+}
+module rev_3 () {
+   difference() {
+        $fn = 100;
+        plate();
+        translate([0, plate_y/2-20, 0])
+            screen_hole_lcd();
+        translate([-plate_x/2 + 20, plate_y/2-50, 0])
+            encoder_hole();
+        translate([plate_x/2-20, plate_y/2-50, 0])
+            switch_hole();
+        translate([plate_x/2-20, plate_y/2-70, 0])
+            switch_hole();
+       translate([plate_x/2-20, plate_y/2-90, 0])
+            switch_hole();
+        translate([0, -plate_y/2+20, 0])
+            button_hole();
+       texts_rev_3();
+   }
+}
+rev_3();
